@@ -215,57 +215,62 @@ export default function PaymentSection({
       
       if (/iPad|iPhone|iPod/.test(userAgent)) {
         setDeviceType('ios');
-        // Show Apple Pay immediately on iOS
+        // Enable Apple Pay by default on iOS (since it works through Stripe)
         setCanUseApplePay(true);
-        setCanUseGooglePay(true); // Also show Google Pay as option
+        setCanUseGooglePay(false);
       } else if (/android/i.test(userAgent)) {
         setDeviceType('android');
-        // Show Google Pay immediately on Android
+        // Enable Google Pay by default on Android
         setCanUseGooglePay(true);
-        setCanUseApplePay(true); // Also show Apple Pay as option
+        setCanUseApplePay(false);
       } else {
         setDeviceType('desktop');
-        // Show both on desktop
-        setCanUseApplePay(true);
-        setCanUseGooglePay(true);
+        // On desktop, try to detect what's available
+        setCanUseApplePay(false);
+        setCanUseGooglePay(false);
       }
     };
 
     const checkPaymentMethods = async () => {
-      try {
-        const stripe = await stripePromise;
-        if (!stripe) {
-          setPaymentMethodsChecked(true);
-          return;
-        }
+      // Only check payment methods on desktop - mobile devices get enabled by default
+      if (deviceType === 'desktop') {
+        try {
+          const stripe = await stripePromise;
+          if (!stripe) {
+            setPaymentMethodsChecked(true);
+            return;
+          }
 
-        const paymentRequest = stripe.paymentRequest({
-          country: 'CA',
-          currency: 'cad',
-          total: { label: 'Test', amount: 100 },
-        });
+          const paymentRequest = stripe.paymentRequest({
+            country: 'CA',
+            currency: 'cad',
+            total: { 
+              label: 'Pita Melt Order', 
+              amount: Math.max(Math.round(totalAmount * 100), 100)
+            },
+            requestPayerName: true,
+            requestPayerEmail: true,
+            requestPayerPhone: false,
+          });
 
-        const canMakePayment = await paymentRequest.canMakePayment();
-        
-        // Update actual availability (buttons will be disabled if not actually available)
-        if (canMakePayment) {
-          setCanUseApplePay(canMakePayment.applePay || false);
-          setCanUseGooglePay(canMakePayment.googlePay || false);
-        } else {
-          setCanUseApplePay(false);
-          setCanUseGooglePay(false);
+          const canMakePayment = await paymentRequest.canMakePayment();
+          
+          if (canMakePayment) {
+            setCanUseApplePay(canMakePayment.applePay || false);
+            setCanUseGooglePay(canMakePayment.googlePay || false);
+          }
+          
+        } catch (error) {
+          console.log('Payment methods check failed on desktop:', error);
         }
-        
-        setPaymentMethodsChecked(true);
-      } catch (error) {
-        console.log('Payment methods check failed:', error);
-        setPaymentMethodsChecked(true);
       }
+      
+      setPaymentMethodsChecked(true);
     };
 
     detectDevice();
     checkPaymentMethods();
-  }, []);
+  }, [totalAmount]);
 
   return (
     <div className="space-y-6">
