@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
             stripe_session_id: session.id,
             customer_name: session.customer_details?.name || session.metadata?.customerName || '',
             customer_phone: session.customer_details?.phone || session.metadata?.customerPhone || '',
-            pickup_time: new Date(pickupTime).toLocaleString(),
+            pickup_time: new Date(pickupTime).toISOString(),
             total_amount: (session.amount_total || 0) / 100,
             status: 'confirmed' as const,
             payment_status: 'succeeded' as const,
@@ -61,8 +61,10 @@ export async function POST(request: NextRequest) {
           
           if (error) {
             console.error('Error creating order:', error);
+            console.error('Error details:', JSON.stringify(error, null, 2));
           } else {
             console.log('Order created successfully:', data);
+            console.log('Order ID:', data?.[0]?.id);
           }
         } catch (error) {
           console.error('Error processing checkout session:', error);

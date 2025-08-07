@@ -16,7 +16,27 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(orders || []);
+    console.log('Raw orders from database:', orders?.length || 0, 'orders found');
+    console.log('Sample raw order:', orders?.[0]);
+
+    // Transform database format to TypeScript interface format
+    const transformedOrders = (orders || []).map(order => ({
+      id: order.id,
+      items: order.items || [],
+      customerInfo: {
+        name: order.customer_name || '',
+        phone: order.customer_phone || ''
+      },
+      totalAmount: order.total_amount || 0,
+      status: order.status,
+      paymentStatus: order.payment_status,
+      paymentIntentId: order.stripe_session_id,
+      estimatedPickupTime: order.pickup_time ? new Date(order.pickup_time) : new Date(),
+      createdAt: order.created_at ? new Date(order.created_at) : new Date(),
+      updatedAt: order.updated_at ? new Date(order.updated_at) : new Date()
+    }));
+
+    return NextResponse.json(transformedOrders);
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json(
