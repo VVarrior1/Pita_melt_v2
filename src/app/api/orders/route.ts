@@ -22,7 +22,19 @@ export async function GET() {
     // Transform database format to TypeScript interface format
     const transformedOrders = (orders || []).map(order => ({
       id: order.id,
-      items: order.items || [],
+      items: (order.items || []).map((item: any) => ({
+        id: item.id,
+        menuItem: {
+          id: item.id,
+          name: item.name,
+          prices: item.price ? [{ price: item.price, size: 'Regular', label: `$${item.price}` }] : []
+        },
+        quantity: item.quantity || 1,
+        selectedSize: { price: item.price || 0, size: 'Regular', label: `$${item.price || 0}` },
+        customizations: item.customizations || {},
+        totalPrice: item.price ? item.price * (item.quantity || 1) : 0,
+        specialInstructions: item.specialInstructions || ''
+      })),
       customerInfo: {
         name: order.customer_name || '',
         phone: order.customer_phone || ''
