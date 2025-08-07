@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
     console.log('📝 Webhook body length:', body.length);
     console.log('🔐 Signature present:', !!signature);
     console.log('🔑 Webhook secret configured:', !!webhookSecret);
+    console.log('🔍 Webhook secret prefix:', webhookSecret ? webhookSecret.substring(0, 15) + '...' : 'NOT SET');
+    console.log('🔍 Signature prefix:', signature ? signature.substring(0, 20) + '...' : 'NOT SET');
 
     let event: Stripe.Event;
 
