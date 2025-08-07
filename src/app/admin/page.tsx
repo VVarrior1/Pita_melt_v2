@@ -109,13 +109,27 @@ export default function AdminPage() {
     }
   }, [isAuthenticated, isCheckingAuth]);
 
-  const handleLogin = () => {
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      localStorage.setItem('admin-authenticated', 'true');
-      toast.success('Welcome to Admin Dashboard');
-    } else {
-      toast.error('Invalid password');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setIsAuthenticated(true);
+        localStorage.setItem('admin-authenticated', 'true');
+        toast.success('Welcome to Admin Dashboard');
+      } else {
+        toast.error('Invalid password');
+      }
+    } catch (error) {
+      toast.error('Authentication failed');
     }
   };
 
