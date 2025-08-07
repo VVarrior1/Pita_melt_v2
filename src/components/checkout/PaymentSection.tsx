@@ -1,0 +1,342 @@
+'use client';
+
+import React, { useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { CreditCard, Smartphone, Apple } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { CustomerInfo } from '@/types/menu';
+import { useCartStore } from '@/store/cartStore';
+import toast from 'react-hot-toast';
+
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+interface PaymentSectionProps {
+  customerInfo: CustomerInfo;
+  totalAmount: number;
+  estimatedPickupMinutes: number;
+  onPaymentSuccess: () => void;
+  onPaymentError: (error: string) => void;
+  disabled?: boolean;
+  onValidate?: () => boolean;
+}
+
+export default function PaymentSection({
+  customerInfo,
+  totalAmount,
+  estimatedPickupMinutes,
+  onPaymentSuccess,
+  onPaymentError,
+  disabled = false,
+  onValidate
+}: PaymentSectionProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'google_pay'>('card');
+  const { items } = useCartStore();
+
+  const validateCustomerInfo = (): boolean => {
+    const required = ['firstName', 'lastName', 'phone', 'email'];
+    return required.every(field => customerInfo[field as keyof CustomerInfo]?.trim());
+  };
+
+  const createPaymentIntent = async () => {
+    try {
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: Math.round(totalAmount * 100), // Convert to cents
+          customerInfo,
+          items: items.map(item => ({
+            id: item.id,
+            name: item.menuItem.name,
+            quantity: item.quantity,
+            price: item.totalPrice,
+            customizations: item.customizations,
+            specialInstructions: item.specialInstructions
+          })),
+          estimatedPickupMinutes
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
+
+      const data = await response.json();
+      return data.clientSecret;
+    } catch (error) {
+      console.error('Error creating payment intent:', error);
+      throw error;
+    }
+  };
+
+  const handleCardPayment = async () => {
+    // Run parent validation first
+    if (onValidate && !onValidate()) {
+      return; // Parent validation failed
+    }
+    
+    if (!validateCustomerInfo()) {
+      return; // Basic validation failed
+    }
+
+    setIsProcessing(true);
+    
+    try {
+      // Create Checkout Session
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerInfo,
+          items: items.map(item => ({
+            id: item.id,
+            name: item.menuItem.name,
+            quantity: item.quantity,
+            price: item.totalPrice,
+            customizations: item.customizations,
+            specialInstructions: item.specialInstructions
+          })),
+          totalAmount: totalAmount,
+          estimatedPickupMinutes: estimatedPickupMinutes
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { sessionId } = await response.json();
+
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: unknown) {
+      console.error('Card payment error:', error);
+      onPaymentError((error as Error).message || 'Payment failed');
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAppleGooglePay = async (method: 'apple_pay' | 'google_pay') => {
+    // Run parent validation first
+    if (onValidate && !onValidate()) {
+      return; // Parent validation failed
+    }
+    
+    if (!validateCustomerInfo()) {
+      return; // Basic validation failed
+    }
+
+    setIsProcessing(true);
+    
+    try {
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      const paymentRequest = stripe.paymentRequest({
+        country: 'CA',
+        currency: 'cad',
+        total: {
+          label: 'Pita Melt Order',
+          amount: Math.round(totalAmount * 100),
+        },
+        requestPayerName: true,
+        requestPayerEmail: true,
+        requestPayerPhone: true,
+      });
+
+      const canMakePayment = await paymentRequest.canMakePayment();
+      
+      if (!canMakePayment) {
+        throw new Error(`${method === 'apple_pay' ? 'Apple Pay' : 'Google Pay'} is not available on this device`);
+      }
+
+      const clientSecret = await createPaymentIntent();
+
+      paymentRequest.on('paymentmethod', async (ev) => {
+        try {
+          const { error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: ev.paymentMethod.id
+          });
+
+          if (confirmError) {
+            ev.complete('fail');
+            throw confirmError;
+          }
+
+          ev.complete('success');
+          onPaymentSuccess();
+        } catch (error: unknown) {
+          ev.complete('fail');
+          onPaymentError((error as Error).message);
+        }
+      });
+
+      paymentRequest.show();
+    } catch (error: unknown) {
+      console.error(`${method} payment error:`, error);
+      onPaymentError((error as Error).message || `${method === 'apple_pay' ? 'Apple Pay' : 'Google Pay'} payment failed`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+
+  // Check if Apple Pay or Google Pay is available
+  const [canUseApplePay, setCanUseApplePay] = useState(false);
+  const [canUseGooglePay, setCanUseGooglePay] = useState(false);
+  const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop'>('desktop');
+
+  React.useEffect(() => {
+    const detectDevice = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      
+      if (/iPad|iPhone|iPod/.test(userAgent)) {
+        setDeviceType('ios');
+      } else if (/android/i.test(userAgent)) {
+        setDeviceType('android');
+      } else {
+        setDeviceType('desktop');
+      }
+    };
+
+    const checkPaymentMethods = async () => {
+      try {
+        const stripe = await stripePromise;
+        if (!stripe) return;
+
+        const paymentRequest = stripe.paymentRequest({
+          country: 'CA',
+          currency: 'cad',
+          total: { label: 'Test', amount: 100 },
+        });
+
+        const canMakePayment = await paymentRequest.canMakePayment();
+        if (canMakePayment) {
+          // Show Apple Pay primarily on iOS devices
+          if (deviceType === 'ios' && canMakePayment.applePay) {
+            setCanUseApplePay(true);
+          }
+          // Show Google Pay primarily on Android devices
+          else if (deviceType === 'android' && canMakePayment.googlePay) {
+            setCanUseGooglePay(true);
+          }
+          // On desktop, show both if available
+          else if (deviceType === 'desktop') {
+            setCanUseApplePay(canMakePayment.applePay || false);
+            setCanUseGooglePay(canMakePayment.googlePay || false);
+          }
+        }
+      } catch (error) {
+        console.log('Payment methods check failed:', error);
+      }
+    };
+
+    detectDevice();
+    checkPaymentMethods();
+  }, [deviceType]);
+
+  return (
+    <div className="space-y-6">
+      {/* Payment Method Selection */}
+      <div className="grid grid-cols-1 gap-3">
+        {/* Apple Pay */}
+        {canUseApplePay && (
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => handleAppleGooglePay('apple_pay')}
+            disabled={disabled || isProcessing}
+            isLoading={isProcessing && paymentMethod === 'apple_pay'}
+            className="w-full flex items-center justify-center space-x-2 border-gray-300 hover:bg-gray-50 text-gray-800"
+          >
+            <Apple className="h-5 w-5" />
+            <span>Pay with Apple Pay</span>
+          </Button>
+        )}
+
+        {/* Google Pay */}
+        {canUseGooglePay && (
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => handleAppleGooglePay('google_pay')}
+            disabled={disabled || isProcessing}
+            isLoading={isProcessing && paymentMethod === 'google_pay'}
+            className="w-full flex items-center justify-center space-x-2 border-gray-300 hover:bg-gray-50 text-gray-800"
+          >
+            <Smartphone className="h-5 w-5" />
+            <span>Pay with Google Pay</span>
+          </Button>
+        )}
+
+        {/* Divider */}
+        {(canUseApplePay || canUseGooglePay) && (
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or pay with card</span>
+            </div>
+          </div>
+        )}
+
+        {/* Credit Card */}
+        <Button
+          size="lg"
+          onClick={handleCardPayment}
+          disabled={disabled || isProcessing}
+          isLoading={isProcessing && paymentMethod === 'card'}
+          className="w-full flex items-center justify-center space-x-2"
+        >
+          <CreditCard className="h-5 w-5" />
+          <span>Pay with Credit Card - ${totalAmount.toFixed(2)}</span>
+        </Button>
+      </div>
+
+      {/* Payment Info */}
+      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-gray-700">Subtotal:</span>
+          <span className="font-medium text-gray-800">${totalAmount.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-gray-700">Tax (GST/PST):</span>
+          <span className="font-medium text-gray-800">Included</span>
+        </div>
+        <div className="border-t border-gray-300 pt-2">
+          <div className="flex justify-between items-center">
+            <span className="text-lg font-semibold text-gray-800">Total:</span>
+            <span className="text-lg font-bold text-[#f17105]">${totalAmount.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Security Notice */}
+      <div className="text-center bg-green-50 rounded-xl p-4 border border-green-200">
+        <p className="text-green-800 text-sm font-medium">
+          🔒 Your payment information is encrypted and secure
+        </p>
+        <p className="text-green-600 text-xs mt-1">
+          Powered by Stripe - PCI DSS Level 1 Compliant
+        </p>
+      </div>
+    </div>
+  );
+}
