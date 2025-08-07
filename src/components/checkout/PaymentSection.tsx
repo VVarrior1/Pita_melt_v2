@@ -291,7 +291,7 @@ export default function PaymentSection({
                 onClick={() => handleAppleGooglePay('google_pay')}
                 disabled={disabled || isProcessing}
                 isLoading={isProcessing && paymentMethod === 'google_pay'}
-                className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-100 text-black font-medium"
+                className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-50 hover:text-black text-black font-medium"
               >
                 <Smartphone className="h-5 w-5 text-black" />
                 <span>Pay with Google Pay</span>
@@ -308,7 +308,7 @@ export default function PaymentSection({
                 onClick={() => handleAppleGooglePay('google_pay')}
                 disabled={disabled || isProcessing}
                 isLoading={isProcessing && paymentMethod === 'google_pay'}
-                className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-100 text-black font-medium"
+                className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-50 hover:text-black text-black font-medium"
               >
                 <Smartphone className="h-5 w-5 text-black" />
                 <span>Pay with Google Pay</span>
