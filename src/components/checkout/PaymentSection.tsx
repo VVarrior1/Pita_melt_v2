@@ -207,6 +207,7 @@ export default function PaymentSection({
   const [canUseApplePay, setCanUseApplePay] = useState(false);
   const [canUseGooglePay, setCanUseGooglePay] = useState(false);
   const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop'>('desktop');
+  const [paymentMethodsChecked, setPaymentMethodsChecked] = useState(false);
 
   React.useEffect(() => {
     const detectDevice = () => {
@@ -214,17 +215,29 @@ export default function PaymentSection({
       
       if (/iPad|iPhone|iPod/.test(userAgent)) {
         setDeviceType('ios');
+        // Show Apple Pay immediately on iOS
+        setCanUseApplePay(true);
+        setCanUseGooglePay(true); // Also show Google Pay as option
       } else if (/android/i.test(userAgent)) {
         setDeviceType('android');
+        // Show Google Pay immediately on Android
+        setCanUseGooglePay(true);
+        setCanUseApplePay(true); // Also show Apple Pay as option
       } else {
         setDeviceType('desktop');
+        // Show both on desktop
+        setCanUseApplePay(true);
+        setCanUseGooglePay(true);
       }
     };
 
     const checkPaymentMethods = async () => {
       try {
         const stripe = await stripePromise;
-        if (!stripe) return;
+        if (!stripe) {
+          setPaymentMethodsChecked(true);
+          return;
+        }
 
         const paymentRequest = stripe.paymentRequest({
           country: 'CA',
@@ -233,33 +246,26 @@ export default function PaymentSection({
         });
 
         const canMakePayment = await paymentRequest.canMakePayment();
+        
+        // Update actual availability (buttons will be disabled if not actually available)
         if (canMakePayment) {
-          // Prioritize Apple Pay on iOS devices
-          if (deviceType === 'ios') {
-            setCanUseApplePay(canMakePayment.applePay || false);
-            // Also show Google Pay as secondary option on iOS if available
-            setCanUseGooglePay(canMakePayment.googlePay || false);
-          }
-          // Prioritize Google Pay on Android devices  
-          else if (deviceType === 'android') {
-            setCanUseGooglePay(canMakePayment.googlePay || false);
-            // Also show Apple Pay as secondary option on Android if available
-            setCanUseApplePay(canMakePayment.applePay || false);
-          }
-          // On desktop, show both if available
-          else {
-            setCanUseApplePay(canMakePayment.applePay || false);
-            setCanUseGooglePay(canMakePayment.googlePay || false);
-          }
+          setCanUseApplePay(canMakePayment.applePay || false);
+          setCanUseGooglePay(canMakePayment.googlePay || false);
+        } else {
+          setCanUseApplePay(false);
+          setCanUseGooglePay(false);
         }
+        
+        setPaymentMethodsChecked(true);
       } catch (error) {
         console.log('Payment methods check failed:', error);
+        setPaymentMethodsChecked(true);
       }
     };
 
     detectDevice();
     checkPaymentMethods();
-  }, [deviceType]);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -269,80 +275,86 @@ export default function PaymentSection({
         {deviceType === 'ios' ? (
           <>
             {/* Apple Pay - Primary on iOS */}
-            {canUseApplePay && (
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => handleAppleGooglePay('apple_pay')}
-                disabled={disabled || isProcessing}
-                isLoading={isProcessing && paymentMethod === 'apple_pay'}
-                className="w-full flex items-center justify-center space-x-2 bg-black border-2 border-gray-600 hover:bg-gray-900 text-white font-medium"
-              >
-                <Apple className="h-5 w-5 text-white" />
-                <span>Pay with Apple Pay</span>
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => handleAppleGooglePay('apple_pay')}
+              disabled={disabled || isProcessing || !canUseApplePay}
+              isLoading={isProcessing && paymentMethod === 'apple_pay'}
+              className="w-full flex items-center justify-center space-x-2 bg-black border-2 border-gray-600 hover:bg-gray-900 text-white font-medium disabled:opacity-50"
+            >
+              <Apple className="h-5 w-5 text-white" />
+              <span>
+                {!paymentMethodsChecked ? 'Checking Apple Pay...' : 
+                 !canUseApplePay ? 'Apple Pay Not Available' : 
+                 'Pay with Apple Pay'}
+              </span>
+            </Button>
 
             {/* Google Pay - Secondary on iOS */}
-            {canUseGooglePay && (
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => handleAppleGooglePay('google_pay')}
-                disabled={disabled || isProcessing}
-                isLoading={isProcessing && paymentMethod === 'google_pay'}
-                className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-50 hover:text-black text-black font-medium"
-              >
-                <Smartphone className="h-5 w-5 text-black" />
-                <span>Pay with Google Pay</span>
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => handleAppleGooglePay('google_pay')}
+              disabled={disabled || isProcessing || !canUseGooglePay}
+              isLoading={isProcessing && paymentMethod === 'google_pay'}
+              className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-50 hover:text-black text-black font-medium disabled:opacity-50"
+            >
+              <Smartphone className="h-5 w-5 text-black" />
+              <span>
+                {!paymentMethodsChecked ? 'Checking Google Pay...' : 
+                 !canUseGooglePay ? 'Google Pay Not Available' : 
+                 'Pay with Google Pay'}
+              </span>
+            </Button>
           </>
         ) : (
           <>
             {/* Google Pay - Primary on Android/Desktop */}
-            {canUseGooglePay && (
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => handleAppleGooglePay('google_pay')}
-                disabled={disabled || isProcessing}
-                isLoading={isProcessing && paymentMethod === 'google_pay'}
-                className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-50 hover:text-black text-black font-medium"
-              >
-                <Smartphone className="h-5 w-5 text-black" />
-                <span>Pay with Google Pay</span>
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => handleAppleGooglePay('google_pay')}
+              disabled={disabled || isProcessing || !canUseGooglePay}
+              isLoading={isProcessing && paymentMethod === 'google_pay'}
+              className="w-full flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 hover:bg-gray-50 hover:text-black text-black font-medium disabled:opacity-50"
+            >
+              <Smartphone className="h-5 w-5 text-black" />
+              <span>
+                {!paymentMethodsChecked ? 'Checking Google Pay...' : 
+                 !canUseGooglePay ? 'Google Pay Not Available' : 
+                 'Pay with Google Pay'}
+              </span>
+            </Button>
 
             {/* Apple Pay - Secondary on Android/Desktop */}
-            {canUseApplePay && (
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => handleAppleGooglePay('apple_pay')}
-                disabled={disabled || isProcessing}
-                isLoading={isProcessing && paymentMethod === 'apple_pay'}
-                className="w-full flex items-center justify-center space-x-2 bg-black border-2 border-gray-600 hover:bg-gray-900 text-white font-medium"
-              >
-                <Apple className="h-5 w-5 text-white" />
-                <span>Pay with Apple Pay</span>
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => handleAppleGooglePay('apple_pay')}
+              disabled={disabled || isProcessing || !canUseApplePay}
+              isLoading={isProcessing && paymentMethod === 'apple_pay'}
+              className="w-full flex items-center justify-center space-x-2 bg-black border-2 border-gray-600 hover:bg-gray-900 text-white font-medium disabled:opacity-50"
+            >
+              <Apple className="h-5 w-5 text-white" />
+              <span>
+                {!paymentMethodsChecked ? 'Checking Apple Pay...' : 
+                 !canUseApplePay ? 'Apple Pay Not Available' : 
+                 'Pay with Apple Pay'}
+              </span>
+            </Button>
           </>
         )}
 
         {/* Divider */}
-        {(canUseApplePay || canUseGooglePay) && (
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-900 text-gray-400">Or pay with card</span>
-            </div>
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-700"></div>
           </div>
-        )}
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-gray-900 text-gray-400">Or pay with card</span>
+          </div>
+        </div>
 
         {/* Credit Card */}
         <Button
