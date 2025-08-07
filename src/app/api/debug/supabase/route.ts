@@ -6,9 +6,9 @@ export async function GET() {
     console.log('Testing Supabase connection...');
     
     // Test simple query to orders table
-    const { data, error } = await supabaseAdmin
+    const { data, error, count } = await supabaseAdmin
       .from('orders')
-      .select('count(*)')
+      .select('id', { count: 'exact' })
       .limit(1);
     
     if (error) {
@@ -25,7 +25,8 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       message: 'Supabase connection working',
-      data: data
+      totalOrders: count,
+      sampleData: data
     });
     
   } catch (error) {
