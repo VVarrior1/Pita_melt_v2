@@ -16,5 +16,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/webhook/stripe",
+      "destination": "/api/webhook/stripe"
+    }
   ]
 }
