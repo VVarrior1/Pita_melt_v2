@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, User, Phone, Mail, CreditCard, ArrowLeft } from 'lucide-react';
+import { Clock, User, Phone, CreditCard, ArrowLeft } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { CustomerInfo } from '@/types/menu';
 import PaymentSection from '@/components/checkout/PaymentSection';
@@ -14,8 +14,7 @@ export default function CheckoutPage() {
   const { items, getTotalPrice, getTotalItems, clearCart } = useCartStore();
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: '',
-    phone: '',
-    email: ''
+    phone: ''
   });
   const [isProcessing] = useState(false);
   const [estimatedTime, setEstimatedTime] = useState(20);
@@ -42,13 +41,6 @@ export default function CheckoutPage() {
       errors.name = 'Name is required';
     }
 
-    // Email validation (optional but must be valid if provided)
-    if (customerInfo.email && customerInfo.email.trim()) {
-      const emailPattern = new RegExp('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$');
-      if (!emailPattern.test(customerInfo.email)) {
-        errors.email = 'Please enter a valid email address';
-      }
-    }
 
     // Phone validation (optional but must be valid if provided)
     if (customerInfo.phone && customerInfo.phone.trim()) {
@@ -173,31 +165,10 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center">
-                    <Mail className="h-4 w-4 mr-2 text-gray-500" />
-                    Email Address (Optional)
-                  </label>
-                  <input
-                    type="email"
-                    value={customerInfo.email || ''}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full p-3 bg-gray-800 border rounded-lg text-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 ${
-                      validationErrors.email ? 'border-red-500' : 'border-gray-700'
-                    }`}
-                    placeholder="your@email.com"
-                  />
-                  {validationErrors.email && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center">
-                      <span className="mr-1">⚠️</span>
-                      {validationErrors.email}
-                    </p>
-                  )}
-                </div>
               </div>
 
               <p className="text-gray-400 text-sm mt-4">
-                * Only name is required. Phone and email are optional but can help us contact you about your order.
+                * Only name is required. Phone is optional but can help us contact you about your order.
               </p>
             </div>
 

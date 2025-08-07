@@ -77,39 +77,6 @@ export async function POST(request: NextRequest) {
       };
     });
 
-    // Create or retrieve customer (only if email is provided)
-    let customerId: string | undefined;
-    
-    if (customerInfo.email) {
-      const customers = await stripe.customers.list({
-        email: customerInfo.email,
-        limit: 1
-      });
-
-      if (customers.data.length > 0) {
-        customerId = customers.data[0].id;
-        
-        // Update customer information
-        await stripe.customers.update(customerId, {
-          name: customerInfo.name,
-          phone: customerInfo.phone,
-          metadata: {
-            fullName: customerInfo.name
-          }
-        });
-      } else {
-        // Create new customer
-        const customer = await stripe.customers.create({
-          email: customerInfo.email,
-          name: customerInfo.name,
-          phone: customerInfo.phone,
-          metadata: {
-            fullName: customerInfo.name
-          }
-        });
-        customerId = customer.id;
-      }
-    }
 
     // Create checkout session
     const sessionData: Stripe.Checkout.SessionCreateParams = {
@@ -121,7 +88,6 @@ export async function POST(request: NextRequest) {
       metadata: {
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone || '',
-        customerEmail: customerInfo.email || '',
         estimatedPickupTime: pickupTime.toISOString(),
         orderItems: JSON.stringify(items),
         restaurantName: 'Pita Melt',
@@ -132,31 +98,21 @@ export async function POST(request: NextRequest) {
         metadata: {
           customerName: customerInfo.name,
           customerPhone: customerInfo.phone || '',
-          customerEmail: customerInfo.email || '',
-          estimatedPickupTime: pickupTime.toISOString(),
+            estimatedPickupTime: pickupTime.toISOString(),
         },
         description: `Pita Melt Order - ${items.length} item${items.length !== 1 ? 's' : ''} - Pickup at ${pickupTime.toLocaleTimeString()}`,
-        receipt_email: customerInfo.email || undefined,
       },
       shipping_address_collection: {
         allowed_countries: ['CA'],
       },
-      customer_update: {
-        address: 'auto',
-      },
     };
 
-    // Add customer ID if available
-    if (customerId) {
-      sessionData.customer = customerId;
-    }
 
     const session = await stripe.checkout.sessions.create(sessionData);
 
     // Log the order creation
     console.log('New checkout session created:', {
       sessionId: session.id,
-      customerId,
       customerInfo,
       items,
       totalAmount,

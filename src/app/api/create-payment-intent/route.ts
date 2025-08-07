@@ -51,39 +51,6 @@ export async function POST(request: NextRequest) {
     const pickupTime = new Date();
     pickupTime.setMinutes(pickupTime.getMinutes() + estimatedPickupMinutes);
 
-    // Create or retrieve customer (only if email is provided)
-    let customerId: string | undefined;
-    
-    if (customerInfo.email) {
-      const customers = await stripe.customers.list({
-        email: customerInfo.email,
-        limit: 1
-      });
-
-      if (customers.data.length > 0) {
-        customerId = customers.data[0].id;
-        
-        // Update customer information
-        await stripe.customers.update(customerId, {
-          name: customerInfo.name,
-          phone: customerInfo.phone,
-          metadata: {
-            fullName: customerInfo.name
-          }
-        });
-      } else {
-        // Create new customer
-        const customer = await stripe.customers.create({
-          email: customerInfo.email,
-          name: customerInfo.name,
-          phone: customerInfo.phone,
-          metadata: {
-            fullName: customerInfo.name
-          }
-        });
-        customerId = customer.id;
-      }
-    }
 
     // Create payment intent
     const paymentIntentData: Stripe.PaymentIntentCreateParams = {
@@ -95,7 +62,6 @@ export async function POST(request: NextRequest) {
       metadata: {
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone || '',
-        customerEmail: customerInfo.email || '',
         estimatedPickupTime: pickupTime.toISOString(),
         orderItems: JSON.stringify(items.map(item => ({
           name: item.name,
@@ -109,7 +75,6 @@ export async function POST(request: NextRequest) {
         restaurantAddress: '7196 Temple Dr NE #22, Calgary, AB'
       },
       description: `Pita Melt Order - ${items.length} item${items.length !== 1 ? 's' : ''} - Pickup at ${pickupTime.toLocaleTimeString()}`,
-      receipt_email: customerInfo.email || undefined,
       shipping: {
         address: {
           line1: '7196 Temple Dr NE #22',
@@ -121,10 +86,6 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    // Add customer ID if available
-    if (customerId) {
-      paymentIntentData.customer = customerId;
-    }
 
     const paymentIntent = await stripe.paymentIntents.create(paymentIntentData);
 
@@ -132,7 +93,6 @@ export async function POST(request: NextRequest) {
     // For now, we'll just log the order
     console.log('New order created:', {
       paymentIntentId: paymentIntent.id,
-      customerId,
       customerInfo,
       items,
       amount: amount / 100,

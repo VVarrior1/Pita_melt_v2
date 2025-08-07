@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Clock, User, Phone, Mail, Package, CheckCircle2, AlertCircle, ChefHat, Utensils } from 'lucide-react';
+import { Clock, User, Phone, Package, CheckCircle2, AlertCircle, ChefHat, Utensils } from 'lucide-react';
 import { Order, OrderStatus } from '@/types/menu';
 import { Button } from '@/components/ui/Button';
 
@@ -177,12 +177,6 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
                 >
                   {order.customerInfo.phone}
                 </a>
-              </div>
-            )}
-            {order.customerInfo.email && (
-              <div className="flex items-center space-x-2 md:col-span-2">
-                <Mail className="h-3 w-3 text-gray-400" />
-                <span className="truncate">{order.customerInfo.email}</span>
               </div>
             )}
           </div>
