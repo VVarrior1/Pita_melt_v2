@@ -107,7 +107,14 @@ export default function PaymentSection({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Checkout session creation failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData
+        });
+        const detailsMsg = errorData.details ? `: ${errorData.details}` : '';
+        throw new Error(`Failed to create checkout session (${response.status})${detailsMsg}`);
       }
 
       const { sessionId } = await response.json();

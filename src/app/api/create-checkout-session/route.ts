@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { CustomerInfo } from '@/types/menu';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-07-30.basil'
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 interface CheckoutSessionRequest {
   customerInfo: CustomerInfo;
@@ -98,7 +96,7 @@ export async function POST(request: NextRequest) {
         metadata: {
           customerName: customerInfo.name,
           customerPhone: customerInfo.phone || '',
-            estimatedPickupTime: pickupTime.toISOString(),
+          estimatedPickupTime: pickupTime.toISOString(),
         },
         description: `Pita Melt Order - ${items.length} item${items.length !== 1 ? 's' : ''} - Pickup at ${pickupTime.toLocaleTimeString()}`,
       },
@@ -127,10 +125,14 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Checkout session creation error:', error);
     
+    // Always return detailed error for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
     return NextResponse.json(
       { 
         error: 'Failed to create checkout session',
-        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+        details: errorMessage,
+        stack: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined
       },
       { status: 500 }
     );
