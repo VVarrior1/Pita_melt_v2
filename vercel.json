@@ -1,0 +1,20 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "functions": {
+    "src/app/api/webhook/stripe/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/webhook/stripe",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://api.stripe.com"
+        }
+      ]
+    }
+  ]
+}
