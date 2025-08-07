@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!customerInfo.email || !customerInfo.phone || !customerInfo.firstName || !customerInfo.lastName) {
+    if (!customerInfo.name || !customerInfo.name.trim()) {
       return NextResponse.json(
-        { error: 'Customer information is required' },
+        { error: 'Customer name is required' },
         { status: 400 }
       );
     }
@@ -51,51 +51,51 @@ export async function POST(request: NextRequest) {
     const pickupTime = new Date();
     pickupTime.setMinutes(pickupTime.getMinutes() + estimatedPickupMinutes);
 
-    // Create or retrieve customer
-    const customers = await stripe.customers.list({
-      email: customerInfo.email,
-      limit: 1
-    });
-
-    let customerId: string;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      
-      // Update customer information
-      await stripe.customers.update(customerId, {
-        name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        phone: customerInfo.phone,
-        metadata: {
-          firstName: customerInfo.firstName,
-          lastName: customerInfo.lastName
-        }
-      });
-    } else {
-      // Create new customer
-      const customer = await stripe.customers.create({
+    // Create or retrieve customer (only if email is provided)
+    let customerId: string | undefined;
+    
+    if (customerInfo.email) {
+      const customers = await stripe.customers.list({
         email: customerInfo.email,
-        name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        phone: customerInfo.phone,
-        metadata: {
-          firstName: customerInfo.firstName,
-          lastName: customerInfo.lastName
-        }
+        limit: 1
       });
-      customerId = customer.id;
+
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id;
+        
+        // Update customer information
+        await stripe.customers.update(customerId, {
+          name: customerInfo.name,
+          phone: customerInfo.phone,
+          metadata: {
+            fullName: customerInfo.name
+          }
+        });
+      } else {
+        // Create new customer
+        const customer = await stripe.customers.create({
+          email: customerInfo.email,
+          name: customerInfo.name,
+          phone: customerInfo.phone,
+          metadata: {
+            fullName: customerInfo.name
+          }
+        });
+        customerId = customer.id;
+      }
     }
 
     // Create payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntentData: Stripe.PaymentIntentCreateParams = {
       amount,
       currency: 'cad',
-      customer: customerId,
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
-        customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        customerPhone: customerInfo.phone,
-        customerEmail: customerInfo.email,
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone || '',
+        customerEmail: customerInfo.email || '',
         estimatedPickupTime: pickupTime.toISOString(),
         orderItems: JSON.stringify(items.map(item => ({
           name: item.name,
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
         restaurantAddress: '7196 Temple Dr NE #22, Calgary, AB'
       },
       description: `Pita Melt Order - ${items.length} item${items.length !== 1 ? 's' : ''} - Pickup at ${pickupTime.toLocaleTimeString()}`,
-      receipt_email: customerInfo.email,
+      receipt_email: customerInfo.email || undefined,
       shipping: {
         address: {
           line1: '7196 Temple Dr NE #22',
@@ -119,7 +119,14 @@ export async function POST(request: NextRequest) {
         },
         name: 'Pita Melt - Pickup'
       }
-    });
+    };
+
+    // Add customer ID if available
+    if (customerId) {
+      paymentIntentData.customer = customerId;
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentData);
 
     // Store order in database (we'll implement this with Supabase later)
     // For now, we'll just log the order

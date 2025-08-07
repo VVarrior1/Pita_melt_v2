@@ -37,7 +37,7 @@ export default function OrderConfirmationPage() {
             Order <span className="text-[#f17105]">Confirmed!</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Thank you for your order! We're preparing your delicious Mediterranean meal.
+            Thank you for your order! We&apos;re preparing your delicious Mediterranean meal.
           </p>
         </div>
 
@@ -144,7 +144,7 @@ export default function OrderConfirmationPage() {
         <div className="bg-gray-900 rounded-lg p-8 mb-8">
           <h2 className="text-xl font-semibold mb-6 flex items-center">
             <Mail className="h-5 w-5 text-[#f17105] mr-2" />
-            What's Next?
+            What&apos;s Next?
           </h2>
           
           <div className="grid md:grid-cols-2 gap-6">
@@ -152,7 +152,7 @@ export default function OrderConfirmationPage() {
               <div className="flex items-start space-x-3">
                 <div className="bg-[#f17105] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</div>
                 <div>
-                  <h3 className="font-medium">We're preparing your order</h3>
+                  <h3 className="font-medium">We&apos;re preparing your order</h3>
                   <p className="text-sm text-gray-400">Our kitchen team has received your order and started preparation.</p>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function OrderConfirmationPage() {
                 <div className="bg-[#f17105] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</div>
                 <div>
                   <h3 className="font-medium">Order ready notification</h3>
-                  <p className="text-sm text-gray-400">We'll send you an email when your order is ready for pickup.</p>
+                  <p className="text-sm text-gray-400">We&apos;ll send you an email when your order is ready for pickup.</p>
                 </div>
               </div>
               
@@ -178,7 +178,7 @@ export default function OrderConfirmationPage() {
               <h3 className="font-semibold mb-3 text-[#f17105]">Need Help?</h3>
               <div className="space-y-3 text-sm">
                 <p className="text-gray-300">
-                  If you have any questions about your order, please don't hesitate to contact us.
+                  If you have any questions about your order, please don&apos;t hesitate to contact us.
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">

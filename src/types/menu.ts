@@ -67,10 +67,9 @@ export interface Order {
 }
 
 export interface CustomerInfo {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
+  name: string;
+  phone?: string;
+  email?: string;
 }
 
 export type OrderStatus = 

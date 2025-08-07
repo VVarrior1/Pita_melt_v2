@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { Heart, Users, Award, Clock } from 'lucide-react';
 
 export default function AboutPage() {
@@ -99,7 +98,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Community</h3>
               <p className="text-gray-400">
-                We're proud to be part of the Calgary community and serve our neighbors
+                We&apos;re proud to be part of the Calgary community and serve our neighbors
               </p>
             </div>
 
@@ -124,10 +123,10 @@ export default function AboutPage() {
               A Message from Our <span className="text-[#f17105]">Team</span>
             </h2>
             <blockquote className="text-xl text-gray-300 italic mb-6">
-              "We believe that food is more than just sustenance—it's a way to connect cultures, 
+              &quot;We believe that food is more than just sustenance—it&apos;s a way to connect cultures, 
               share experiences, and create lasting memories. Every time you visit Pita Melt, 
-              you're not just getting a meal; you're embarking on a culinary journey through 
-              the Mediterranean."
+              you&apos;re not just getting a meal; you&apos;re embarking on a culinary journey through 
+              the Mediterranean.&quot;
             </blockquote>
             <p className="text-[#f17105] font-semibold">
               - The Pita Melt Family

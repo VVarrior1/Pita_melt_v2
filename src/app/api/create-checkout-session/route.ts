@@ -26,10 +26,10 @@ export async function POST(request: NextRequest) {
     const body: CheckoutSessionRequest = await request.json();
     const { customerInfo, items, totalAmount, estimatedPickupMinutes, paymentMethod = 'card' } = body;
 
-    // Validate required fields
-    if (!customerInfo.email || !customerInfo.phone || !customerInfo.firstName || !customerInfo.lastName) {
+    // Validate required fields - only name is required now
+    if (!customerInfo.name || !customerInfo.name.trim()) {
       return NextResponse.json(
-        { error: 'Customer information is required' },
+        { error: 'Customer name is required' },
         { status: 400 }
       );
     }
@@ -77,51 +77,51 @@ export async function POST(request: NextRequest) {
       };
     });
 
-    // Create or retrieve customer
-    const customers = await stripe.customers.list({
-      email: customerInfo.email,
-      limit: 1
-    });
-
-    let customerId: string;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      
-      // Update customer information
-      await stripe.customers.update(customerId, {
-        name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        phone: customerInfo.phone,
-        metadata: {
-          firstName: customerInfo.firstName,
-          lastName: customerInfo.lastName
-        }
-      });
-    } else {
-      // Create new customer
-      const customer = await stripe.customers.create({
+    // Create or retrieve customer (only if email is provided)
+    let customerId: string | undefined;
+    
+    if (customerInfo.email) {
+      const customers = await stripe.customers.list({
         email: customerInfo.email,
-        name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        phone: customerInfo.phone,
-        metadata: {
-          firstName: customerInfo.firstName,
-          lastName: customerInfo.lastName
-        }
+        limit: 1
       });
-      customerId = customer.id;
+
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id;
+        
+        // Update customer information
+        await stripe.customers.update(customerId, {
+          name: customerInfo.name,
+          phone: customerInfo.phone,
+          metadata: {
+            fullName: customerInfo.name
+          }
+        });
+      } else {
+        // Create new customer
+        const customer = await stripe.customers.create({
+          email: customerInfo.email,
+          name: customerInfo.name,
+          phone: customerInfo.phone,
+          metadata: {
+            fullName: customerInfo.name
+          }
+        });
+        customerId = customer.id;
+      }
     }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
+    const sessionData: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: paymentMethod === 'paypal' ? ['paypal'] : ['card'],
       line_items: lineItems,
       mode: 'payment',
       success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/checkout`,
       metadata: {
-        customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        customerPhone: customerInfo.phone,
-        customerEmail: customerInfo.email,
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone || '',
+        customerEmail: customerInfo.email || '',
         estimatedPickupTime: pickupTime.toISOString(),
         orderItems: JSON.stringify(items),
         restaurantName: 'Pita Melt',
@@ -130,13 +130,13 @@ export async function POST(request: NextRequest) {
       },
       payment_intent_data: {
         metadata: {
-          customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
-          customerPhone: customerInfo.phone,
-          customerEmail: customerInfo.email,
+          customerName: customerInfo.name,
+          customerPhone: customerInfo.phone || '',
+          customerEmail: customerInfo.email || '',
           estimatedPickupTime: pickupTime.toISOString(),
         },
         description: `Pita Melt Order - ${items.length} item${items.length !== 1 ? 's' : ''} - Pickup at ${pickupTime.toLocaleTimeString()}`,
-        receipt_email: customerInfo.email,
+        receipt_email: customerInfo.email || undefined,
       },
       shipping_address_collection: {
         allowed_countries: ['CA'],
@@ -144,7 +144,14 @@ export async function POST(request: NextRequest) {
       customer_update: {
         address: 'auto',
       },
-    });
+    };
+
+    // Add customer ID if available
+    if (customerId) {
+      sessionData.customer = customerId;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionData);
 
     // Log the order creation
     console.log('New checkout session created:', {

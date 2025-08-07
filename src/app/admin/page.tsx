@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Lock, RefreshCw, Clock, User, Phone, Mail, Package, CheckCircle2, AlertCircle, Volume2, VolumeX } from 'lucide-react';
+import { Lock, RefreshCw, Package, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Order, OrderStatus } from '@/types/menu';
 import AdminOrderCard from '@/components/admin/AdminOrderCard';
@@ -34,7 +34,7 @@ export default function AdminPage() {
   const playNotificationSound = () => {
     try {
       // Create a simple notification sound using Web Audio API
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext || (window as typeof window & {webkitAudioContext: typeof AudioContext}).webkitAudioContext)();
       
       // Create oscillators for a pleasant notification sound
       const oscillator1 = audioContext.createOscillator();
@@ -89,7 +89,7 @@ export default function AdminPage() {
         }
         
         setOrders(ordersData);
-        setLastOrderIds(currentOrderIds);
+        setLastOrderIds(new Set(ordersData.map((order: Order) => order.id)));
       } else {
         console.error('Failed to fetch orders');
         setOrders([]);

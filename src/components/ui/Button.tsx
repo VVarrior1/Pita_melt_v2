@@ -16,7 +16,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       primary: 'bg-[#f17105] text-white hover:bg-[#e55a00] focus-visible:ring-[#f17105]',
       secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-400',
       outline: 'border border-[#f17105] text-[#f17105] hover:bg-[#f17105] hover:text-white focus-visible:ring-[#f17105]',
-      ghost: 'text-gray-700 hover:bg-gray-100 focus-visible:ring-gray-400',
+      ghost: 'text-gray-300 hover:bg-gray-800 focus-visible:ring-gray-400',
       destructive: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600'
     };
     

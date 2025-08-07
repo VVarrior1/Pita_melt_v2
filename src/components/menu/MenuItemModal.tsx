@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Minus, Check, ShoppingCart, Leaf, Flame, Utensils, Coffee, Salad, Cake, Beer, Soup } from 'lucide-react';
-import { MenuItem, Price, Customization } from '@/types/menu';
+import { MenuItem, Price } from '@/types/menu';
 import { Button } from '@/components/ui/Button';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
@@ -328,7 +328,7 @@ export default function MenuItemModal({ item, isOpen, onClose }: MenuItemModalPr
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
-                                  disabled={isMaxReached}
+                                  disabled={!!isMaxReached}
                                   onChange={(e) => {
                                     const currentValues = customizations[customization.id] as string[] || [];
                                     if (e.target.checked) {

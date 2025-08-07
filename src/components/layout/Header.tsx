@@ -81,7 +81,7 @@ export default function Header() {
               variant="ghost"
               size="sm"
               onClick={toggleCart}
-              className="relative p-2"
+              className="relative p-2 text-white hover:text-[#f17105] hover:bg-gray-800"
             >
               <ShoppingCart className="h-5 w-5" />
               {mounted && totalItems > 0 && (
@@ -98,7 +98,7 @@ export default function Header() {
               variant="ghost"
               size="sm"
               onClick={toggleCart}
-              className="relative p-2"
+              className="relative p-2 text-white hover:text-[#f17105] hover:bg-gray-800"
             >
               <ShoppingCart className="h-5 w-5" />
               {mounted && totalItems > 0 && (

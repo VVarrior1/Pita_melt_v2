@@ -47,7 +47,7 @@ export default function OrderSummary({ items, totalPrice, estimatedTime }: Order
                 </p>
               </div>
               <div className="text-right">
-                <p className="font-medium text-white">
+                <p className="text-sm font-medium text-white">
                   ${item.totalPrice.toFixed(2)}
                 </p>
                 <p className="text-sm text-gray-400">
@@ -89,22 +89,22 @@ export default function OrderSummary({ items, totalPrice, estimatedTime }: Order
             <span className="text-gray-400">
               Subtotal ({items.reduce((sum, item) => sum + item.quantity, 0)} items):
             </span>
-            <span className="text-white">${totalPrice.toFixed(2)}</span>
+            <span className="text-sm text-white">${totalPrice.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Taxes (GST/PST):</span>
-            <span className="text-white">Included</span>
+            <span className="text-sm text-white">Included</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Delivery Fee:</span>
-            <span className="text-white">$0.00 (Pickup)</span>
+            <span className="text-sm text-white">$0.00 (Pickup)</span>
           </div>
         </div>
         
         <div className="border-t border-gray-700 pt-4">
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-white">Total:</span>
-            <span className="text-xl font-bold text-[#f17105]">
+            <span className="font-semibold text-white">Total:</span>
+            <span className="font-bold text-white">
               ${totalPrice.toFixed(2)}
             </span>
           </div>
@@ -127,12 +127,6 @@ export default function OrderSummary({ items, totalPrice, estimatedTime }: Order
         </div>
       </div>
 
-      {/* Order Note */}
-      <div className="mt-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
-        <p className="text-sm text-gray-400 text-center">
-          📧 You'll receive a confirmation email when your order is ready
-        </p>
-      </div>
     </div>
   );
 }

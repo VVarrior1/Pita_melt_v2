@@ -6,7 +6,6 @@ import { CreditCard, Smartphone, Apple } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { CustomerInfo } from '@/types/menu';
 import { useCartStore } from '@/store/cartStore';
-import toast from 'react-hot-toast';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -31,12 +30,12 @@ export default function PaymentSection({
   onValidate
 }: PaymentSectionProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'google_pay'>('card');
+  const [paymentMethod] = useState<'card' | 'apple_pay' | 'google_pay'>('card');
   const { items } = useCartStore();
 
   const validateCustomerInfo = (): boolean => {
-    const required = ['firstName', 'lastName', 'phone', 'email'];
-    return required.every(field => customerInfo[field as keyof CustomerInfo]?.trim());
+    // Only name is required now
+    return customerInfo.name?.trim().length > 0;
   };
 
   const createPaymentIntent = async () => {
@@ -289,10 +288,10 @@ export default function PaymentSection({
         {(canUseApplePay || canUseGooglePay) && (
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-gray-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or pay with card</span>
+              <span className="px-2 bg-gray-900 text-gray-400">Or pay with card</span>
             </div>
           </div>
         )}
@@ -311,29 +310,29 @@ export default function PaymentSection({
       </div>
 
       {/* Payment Info */}
-      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-700">Subtotal:</span>
-          <span className="font-medium text-gray-800">${totalAmount.toFixed(2)}</span>
+          <span className="text-sm text-gray-400">Subtotal:</span>
+          <span className="text-sm font-medium text-white">${totalAmount.toFixed(2)}</span>
         </div>
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-700">Tax (GST/PST):</span>
-          <span className="font-medium text-gray-800">Included</span>
+          <span className="text-sm text-gray-400">Tax (GST/PST):</span>
+          <span className="text-sm font-medium text-white">Included</span>
         </div>
-        <div className="border-t border-gray-300 pt-2">
+        <div className="border-t border-gray-700 pt-2">
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-gray-800">Total:</span>
-            <span className="text-lg font-bold text-[#f17105]">${totalAmount.toFixed(2)}</span>
+            <span className="font-semibold text-white">Total:</span>
+            <span className="font-bold text-white">${totalAmount.toFixed(2)}</span>
           </div>
         </div>
       </div>
 
       {/* Security Notice */}
-      <div className="text-center bg-green-50 rounded-xl p-4 border border-green-200">
-        <p className="text-green-800 text-sm font-medium">
+      <div className="text-center bg-gray-800 rounded-xl p-4 border border-gray-700">
+        <p className="text-gray-300 text-sm font-medium">
           🔒 Your payment information is encrypted and secure
         </p>
-        <p className="text-green-600 text-xs mt-1">
+        <p className="text-gray-400 text-xs mt-1">
           Powered by Stripe - PCI DSS Level 1 Compliant
         </p>
       </div>

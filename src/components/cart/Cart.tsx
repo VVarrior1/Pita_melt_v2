@@ -31,16 +31,16 @@ export default function Cart() {
       />
       
       {/* Cart Panel */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white text-black shadow-xl">
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-gray-900 text-white shadow-xl">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center justify-between p-4 border-b border-gray-700">
             <h2 className="text-lg font-semibold">
               Your Cart ({totalItems} item{totalItems !== 1 ? 's' : ''})
             </h2>
             <button
               onClick={() => setCartOpen(false)}
-              className="p-2 hover:bg-gray-100 rounded-full"
+              className="p-2 hover:bg-gray-800 rounded-full text-white"
             >
               <X className="h-5 w-5" />
             </button>
@@ -51,8 +51,8 @@ export default function Cart() {
             {items.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-6xl mb-4">🛒</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                <p className="text-gray-500 mb-4">Add some delicious items to get started!</p>
+                <h3 className="text-lg font-medium text-white mb-2">Your cart is empty</h3>
+                <p className="text-gray-400 mb-4">Add some delicious items to get started!</p>
                 <Button onClick={() => setCartOpen(false)}>
                   <Link href="/menu">Browse Menu</Link>
                 </Button>
@@ -60,9 +60,9 @@ export default function Cart() {
             ) : (
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="bg-gray-50 rounded-lg p-4">
+                  <div key={item.id} className="bg-gray-800 rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-medium text-gray-900">{item.menuItem.name}</h3>
+                      <h3 className="font-medium text-white">{item.menuItem.name}</h3>
                       <button
                         onClick={() => removeItem(item.id)}
                         className="text-red-500 hover:text-red-700 p-1"
@@ -71,7 +71,7 @@ export default function Cart() {
                       </button>
                     </div>
                     
-                    <div className="text-sm text-gray-600 mb-2">
+                    <div className="text-sm text-gray-300 mb-2">
                       <p>Size: {item.selectedSize.label}</p>
                       
                       {/* Customizations */}
@@ -87,7 +87,7 @@ export default function Cart() {
                       
                       {/* Special Instructions */}
                       {item.specialInstructions && (
-                        <p className="mt-1 text-gray-500 italic">
+                        <p className="mt-1 text-gray-400 italic">
                           Note: {item.specialInstructions}
                         </p>
                       )}
@@ -98,7 +98,7 @@ export default function Cart() {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 hover:bg-gray-200 rounded"
+                          className="p-1 hover:bg-gray-700 rounded text-white"
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-4 w-4" />
@@ -106,12 +106,12 @@ export default function Cart() {
                         <span className="w-8 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 hover:bg-gray-200 rounded"
+                          className="p-1 hover:bg-gray-700 rounded text-white"
                         >
                           <Plus className="h-4 w-4" />
                         </button>
                       </div>
-                      <span className="font-medium">${item.totalPrice.toFixed(2)}</span>
+                      <span className="font-medium text-white">${item.totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 ))}
@@ -121,10 +121,10 @@ export default function Cart() {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="border-t p-4">
+            <div className="border-t border-gray-700 p-4">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-semibold">Total:</span>
-                <span className="text-xl font-bold text-[#f17105]">
+                <span className="text-lg font-semibold text-white">Total:</span>
+                <span className="text-xl font-bold text-white">
                   ${totalPrice.toFixed(2)}
                 </span>
               </div>

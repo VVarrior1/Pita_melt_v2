@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Clock, User, Phone, Mail, Package, CheckCircle2, AlertCircle, ChefHat, Utensils, Leaf } from 'lucide-react';
+import { Clock, User, Phone, Mail, Package, CheckCircle2, AlertCircle, ChefHat, Utensils } from 'lucide-react';
 import { Order, OrderStatus } from '@/types/menu';
 import { Button } from '@/components/ui/Button';
 
@@ -98,7 +98,7 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
     }
     
     const now = new Date();
-    const pickup = new Date(order.pickup_time);
+    const pickup = new Date(order.estimatedPickupTime);
     const diffMinutes = Math.ceil((pickup.getTime() - now.getTime()) / 60000);
     
     if (diffMinutes <= 0) {
@@ -124,7 +124,7 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
             <div>
               <h3 className="text-xl font-bold text-white">Order #{order.id}</h3>
               <p className="text-sm text-gray-400">
-                Placed at {formatTime(order.created_at)}
+                Placed at {formatTime(order.createdAt)}
               </p>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
               <Clock className={`h-4 w-4 ${timeInfo.color}`} />
               <div className="text-right">
                 <div className={`font-medium ${timeInfo.color}`}>
-                  {formatTime(order.pickup_time)}
+                  {formatTime(order.estimatedPickupTime)}
                 </div>
                 <div className={`text-xs ${timeInfo.color}`}>
                   {timeInfo.text} left
@@ -166,21 +166,25 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="flex items-center space-x-2">
               <User className="h-3 w-3 text-gray-400" />
-              <span>{order.customer_name}</span>
+              <span>{order.customerInfo.name}</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Phone className="h-3 w-3 text-gray-400" />
-              <a 
-                href={`tel:${order.customer_phone}`}
-                className="text-[#f17105] hover:underline"
-              >
-                {order.customer_phone}
-              </a>
-            </div>
-            <div className="flex items-center space-x-2 md:col-span-2">
-              <Mail className="h-3 w-3 text-gray-400" />
-              <span className="truncate">{order.customer_email}</span>
-            </div>
+            {order.customerInfo.phone && (
+              <div className="flex items-center space-x-2">
+                <Phone className="h-3 w-3 text-gray-400" />
+                <a 
+                  href={`tel:${order.customerInfo.phone}`}
+                  className="text-[#f17105] hover:underline"
+                >
+                  {order.customerInfo.phone}
+                </a>
+              </div>
+            )}
+            {order.customerInfo.email && (
+              <div className="flex items-center space-x-2 md:col-span-2">
+                <Mail className="h-3 w-3 text-gray-400" />
+                <span className="truncate">{order.customerInfo.email}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -196,14 +200,14 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
-                    <h5 className="font-medium text-white">{item.name}</h5>
+                    <h5 className="font-medium text-white">{item.menuItem.name}</h5>
                   </div>
                   <p className="text-sm text-gray-400">
-                    Unit price: ${(item.price / item.quantity).toFixed(2)} × {item.quantity}
+                    Unit price: ${(item.totalPrice / item.quantity).toFixed(2)} × {item.quantity}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-white">${item.price.toFixed(2)}</p>
+                  <p className="font-medium text-white">${item.totalPrice.toFixed(2)}</p>
                 </div>
               </div>
 
@@ -220,10 +224,10 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
               )}
 
               {/* Special Instructions */}
-              {item.special_instructions && (
+              {item.specialInstructions && (
                 <div className="mt-2 p-2 bg-yellow-900 bg-opacity-30 rounded border-l-2 border-yellow-500">
                   <p className="text-sm text-yellow-200">
-                    <strong>Special Instructions:</strong> {item.special_instructions}
+                    <strong>Special Instructions:</strong> {item.specialInstructions}
                   </p>
                 </div>
               )}
@@ -235,12 +239,12 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
         <div className="mt-6 pt-4 border-t border-gray-700">
           <div className="flex justify-between items-center">
             <span className="text-lg font-semibold">Total:</span>
-            <span className="text-xl font-bold text-[#f17105]">${order.total_amount.toFixed(2)}</span>
+            <span className="text-xl font-bold text-[#f17105]">${order.totalAmount.toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center text-sm text-gray-400 mt-1">
             <span>Payment Status:</span>
-            <span className={`font-medium ${order.payment_status === 'succeeded' ? 'text-green-400' : 'text-yellow-400'}`}>
-              {order.payment_status === 'succeeded' ? 'Paid' : 'Pending'}
+            <span className={`font-medium ${order.paymentStatus === 'succeeded' ? 'text-green-400' : 'text-yellow-400'}`}>
+              {order.paymentStatus === 'succeeded' ? 'Paid' : 'Pending'}
             </span>
           </div>
         </div>
@@ -250,7 +254,8 @@ export default function AdminOrderCard({ order, onUpdateStatus }: AdminOrderCard
           <Button
             variant="outline"
             size="sm"
-            onClick={() => window.open(`tel:${order.customer_phone}`, '_self')}
+            onClick={() => order.customerInfo.phone && window.open(`tel:${order.customerInfo.phone}`, '_self')}
+            disabled={!order.customerInfo.phone}
             className="flex items-center space-x-1"
           >
             <Phone className="h-3 w-3" />

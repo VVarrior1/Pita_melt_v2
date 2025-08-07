@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Leaf, Flame, ShoppingCart, Utensils, Coffee, Salad, Cake, Beer, Soup } from 'lucide-react';
-import { MenuItem, Price } from '@/types/menu';
+import { MenuItem } from '@/types/menu';
 import { Button } from '@/components/ui/Button';
 import MenuItemModal from './MenuItemModal';
 
