@@ -129,15 +129,15 @@ export default function Cart() {
                 </span>
               </div>
               
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={() => setCartOpen(false)}
-              >
-                <Link href="/checkout" className="w-full">
+              <Link href="/checkout" className="w-full">
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={() => setCartOpen(false)}
+                >
                   Proceed to Checkout
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
           )}
         </div>
