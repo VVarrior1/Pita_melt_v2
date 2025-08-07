@@ -30,19 +30,19 @@ export default function OrderConfirmationPage() {
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Success Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500 rounded-full mb-6">
-            <CheckCircle2 className="h-12 w-12 text-white" />
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-full mb-6 shadow-xl">
+            <CheckCircle2 className="h-14 w-14 text-white animate-pulse" />
           </div>
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
             Order <span className="text-[#f17105]">Confirmed!</span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Thank you for your order! We&apos;re preparing your delicious Mediterranean meal.
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            🎉 Thank you for choosing Pita Melt! Your delicious Mediterranean meal is being prepared with care.
           </p>
         </div>
 
         {/* Order Details */}
-        <div className="bg-gray-900 rounded-lg p-8 mb-8">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 mb-8 border border-gray-700 shadow-2xl">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Order Info */}
             <div>
@@ -72,20 +72,30 @@ export default function OrderConfirmationPage() {
                 <Clock className="h-5 w-5 text-[#f17105] mr-2" />
                 <h2 className="text-xl font-semibold">Pickup Information</h2>
               </div>
-              <div className="bg-[#f17105] bg-opacity-10 border border-[#f17105] rounded-lg p-4 mb-4">
-                <p className="text-[#f17105] font-bold text-lg">
-                  Ready by: {estimatedTime}
-                </p>
-                <p className="text-gray-300 text-sm">
-                  Estimated preparation time: 20 minutes
-                </p>
+              <div className="bg-gradient-to-r from-[#f17105] to-[#e86004] rounded-xl p-6 mb-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white text-sm font-medium mb-1">Your order will be ready by</p>
+                    <p className="text-white font-bold text-2xl">
+                      {estimatedTime}
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-20 rounded-full p-3">
+                    <Clock className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white border-opacity-20">
+                  <p className="text-white text-opacity-90 text-sm">
+                    ⏱️ Prep time: ~20 minutes • We'll notify you when it's ready
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Pickup Location */}
-        <div className="bg-gray-900 rounded-lg p-8 mb-8">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 mb-8 border border-gray-700 shadow-2xl">
           <div className="flex items-center mb-6">
             <MapPin className="h-5 w-5 text-[#f17105] mr-2" />
             <h2 className="text-xl font-semibold">Pickup Location</h2>
@@ -141,7 +151,7 @@ export default function OrderConfirmationPage() {
         </div>
 
         {/* What's Next */}
-        <div className="bg-gray-900 rounded-lg p-8 mb-8">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 mb-8 border border-gray-700 shadow-2xl">
           <h2 className="text-xl font-semibold mb-6 flex items-center">
             <Mail className="h-5 w-5 text-[#f17105] mr-2" />
             What&apos;s Next?
@@ -214,9 +224,12 @@ export default function OrderConfirmationPage() {
         </div>
 
         {/* Footer Note */}
-        <div className="text-center mt-12 p-6 bg-gray-900 rounded-lg">
-          <p className="text-gray-400 text-sm">
-            Thank you for choosing Pita Melt! We look forward to serving you again soon. 🥙
+        <div className="text-center mt-12 p-8 bg-gradient-to-r from-[#f17105] to-[#e86004] rounded-xl shadow-xl">
+          <p className="text-white text-lg font-medium">
+            Thank you for choosing Pita Melt! 🥙
+          </p>
+          <p className="text-white text-opacity-90 text-sm mt-2">
+            We look forward to serving you again soon. Follow us for updates and special offers!
           </p>
         </div>
       </div>
