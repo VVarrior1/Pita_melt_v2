@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
           // Create order in database
           const orderData = {
             stripe_session_id: session.id,
+            customer_email: session.customer_details?.email || session.metadata?.customerEmail || 'no-email@provided.com',
             customer_name: session.customer_details?.name || session.metadata?.customerName || '',
             customer_phone: session.customer_details?.phone || session.metadata?.customerPhone || '',
             pickup_time: new Date(pickupTime).toISOString(),
