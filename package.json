@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy-env": "./scripts/deploy-env-simple.sh",
-    "deploy-env-full": "./scripts/deploy-env.sh"
+    "deploy-env": "node ./scripts/deploy-env.js"
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.8.0",

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Simple Vercel Environment Variable Deployment Script
-# This script adds/updates environment variables from .env.production
+# Fixed Vercel Environment Variable Deployment Script
+# Works with current Vercel CLI syntax
 
 set -e
 
@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 Simple Vercel Environment Variable Deployment${NC}"
+echo -e "${BLUE}🚀 Fixed Vercel Environment Variable Deployment${NC}"
 echo -e "${BLUE}===============================================${NC}"
 
 # Check if Vercel CLI is installed
@@ -30,6 +30,22 @@ fi
 
 echo -e "${YELLOW}📤 Adding/updating environment variables from .env.production...${NC}"
 
+# Create a temporary script for expect
+TEMP_SCRIPT=$(mktemp)
+cat > "$TEMP_SCRIPT" << 'EOL'
+#!/usr/bin/expect -f
+set timeout 10
+set key [lindex $argv 0]
+set value [lindex $argv 1]
+
+spawn vercel env add $key production
+expect "What's the value of"
+send "$value\r"
+expect eof
+EOL
+
+chmod +x "$TEMP_SCRIPT"
+
 # Read and process .env.production file
 while IFS= read -r line || [ -n "$line" ]; do
     # Skip empty lines and comments
@@ -41,13 +57,22 @@ while IFS= read -r line || [ -n "$line" ]; do
             
             echo -e "   Adding/Updating: ${GREEN}${key}${NC}"
             
-            # Add environment variable to Vercel (will update if exists)
-            vercel env add "$key" production <<< "$value" || {
-                echo -e "${RED}   Failed to add/update $key${NC}"
-            }
+            # Check if expect is available
+            if command -v expect &> /dev/null; then
+                "$TEMP_SCRIPT" "$key" "$value" &> /dev/null || {
+                    echo -e "${RED}   Failed to add/update $key${NC}"
+                }
+            else
+                # Fallback to manual method
+                echo -e "${YELLOW}   Please add manually: $key${NC}"
+                echo "   Value: $value"
+            fi
         fi
     fi
 done < .env.production
+
+# Clean up
+rm -f "$TEMP_SCRIPT"
 
 echo -e "${GREEN}✅ Environment variables deployment completed!${NC}"
 
