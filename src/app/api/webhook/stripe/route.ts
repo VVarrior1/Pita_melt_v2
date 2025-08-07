@@ -52,19 +52,32 @@ export async function POST(request: NextRequest) {
           console.log('Parsed order items:', orderItems);
           console.log('Pickup time:', pickupTime);
           
-          // Create order in database
-          const orderData = {
+          // Create order in database - only include fields if they have values
+          const orderData: any = {
             stripe_session_id: session.id,
-            customer_email: session.customer_details?.email || session.metadata?.customerEmail || 'no-email@provided.com',
-            customer_name: session.customer_details?.name || session.metadata?.customerName || '',
-            customer_phone: session.customer_details?.phone || session.metadata?.customerPhone || '',
-            pickup_time: new Date(pickupTime).toISOString(),
+            customer_name: session.customer_details?.name || session.metadata?.customerName || 'Anonymous Customer',
             total_amount: (session.amount_total || 0) / 100,
             status: 'confirmed' as const,
             payment_status: 'succeeded' as const,
             items: orderItems,
-            special_instructions: null,
           };
+
+          // Only add optional fields if they exist
+          if (session.customer_details?.email || session.metadata?.customerEmail) {
+            orderData.customer_email = session.customer_details?.email || session.metadata?.customerEmail;
+          }
+          
+          if (session.customer_details?.phone || session.metadata?.customerPhone) {
+            orderData.customer_phone = session.customer_details?.phone || session.metadata?.customerPhone;
+          }
+          
+          if (pickupTime) {
+            orderData.pickup_time = new Date(pickupTime).toISOString();
+          }
+          
+          if (session.metadata?.specialInstructions) {
+            orderData.special_instructions = session.metadata.specialInstructions;
+          }
           
           console.log('💾 Order data to insert:', JSON.stringify(orderData, null, 2));
           console.log('🔄 Attempting to save to Supabase...');
