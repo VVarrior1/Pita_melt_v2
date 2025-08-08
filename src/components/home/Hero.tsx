@@ -17,6 +17,8 @@ export interface HeroProps {
   title?: React.ReactNode;
   /** Subheading sentence under the title */
   subtitle?: string;
+  /** Whether to show CTA buttons */
+  showCtas?: boolean;
   /** Primary CTA button configuration */
   primaryCta?: { href: string; label: string };
   /** Secondary CTA button configuration */
@@ -40,6 +42,7 @@ export default function Hero({
     </>
   ),
   subtitle = "Authentic Mediterranean flavors in Calgary. Fresh, fast, and made with love.",
+  showCtas = true,
   primaryCta = { href: "/menu", label: "Order Online Now" },
   secondaryCta = { href: "/about", label: "Learn More", variant: "outline" },
 }: HeroProps) {
@@ -79,26 +82,28 @@ export default function Hero({
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          {primaryCta && (
-            <Link href={primaryCta.href} aria-label={primaryCta.label}>
-              <Button size="lg" className="w-full sm:w-auto">
-                {primaryCta.label}
-              </Button>
-            </Link>
-          )}
-          {secondaryCta && (
-            <Link href={secondaryCta.href} aria-label={secondaryCta.label}>
-              <Button
-                size="lg"
-                variant={secondaryCta.variant ?? "outline"}
-                className="w-full sm:w-auto"
-              >
-                {secondaryCta.label}
-              </Button>
-            </Link>
-          )}
-        </div>
+        {showCtas && (
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {primaryCta && (
+              <Link href={primaryCta.href} aria-label={primaryCta.label}>
+                <Button size="lg" className="w-full sm:w-auto">
+                  {primaryCta.label}
+                </Button>
+              </Link>
+            )}
+            {secondaryCta && (
+              <Link href={secondaryCta.href} aria-label={secondaryCta.label}>
+                <Button
+                  size="lg"
+                  variant={secondaryCta.variant ?? "outline"}
+                  className="w-full sm:w-auto"
+                >
+                  {secondaryCta.label}
+                </Button>
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Trust badges */}
         <div className="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto text-sm">

@@ -7,8 +7,7 @@ export default function HomePage() {
     <div className="bg-black text-white">
       <Hero
         subtitle="We’re preparing something delicious. Our website is under development."
-        primaryCta={{ href: "/home", label: "View Preview Site" }}
-        secondaryCta={{ href: "/menu", label: "Browse Menu", variant: "outline" }}
+        showCtas={false}
       />
 
       <div className="py-12 bg-gray-900">
