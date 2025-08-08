@@ -4,9 +4,9 @@
       "id": "beef-donair",
       "name": "Beef Donair",
       "prices": [
-        { "size": "S", "price": 8.50, "label": "S: $8.50" },
-        { "size": "M", "price": 10.50, "label": "M: $10.50" },
-        { "size": "L", "price": 12.50, "label": "L: $12.50" },
+        { "size": "S", "price": 8.5, "label": "S: $8.50" },
+        { "size": "M", "price": 10.5, "label": "M: $10.50" },
+        { "size": "L", "price": 12.5, "label": "L: $12.50" },
         { "size": "Jumbo", "price": 16.99, "label": "Jumbo: $16.99" }
       ],
       "category": "pita-wraps",
@@ -31,9 +31,9 @@
       "id": "chicken-shawarma",
       "name": "Chicken Shawarma",
       "prices": [
-        { "size": "S", "price": 8.50, "label": "S: $8.50" },
-        { "size": "M", "price": 10.50, "label": "M: $10.50" },
-        { "size": "L", "price": 12.50, "label": "L: $12.50" },
+        { "size": "S", "price": 8.5, "label": "S: $8.50" },
+        { "size": "M", "price": 10.5, "label": "M: $10.50" },
+        { "size": "L", "price": 12.5, "label": "L: $12.50" },
         { "size": "Jumbo", "price": 16.99, "label": "Jumbo: $16.99" }
       ],
       "category": "pita-wraps",
@@ -58,10 +58,9 @@
       "id": "tenderloin-steak",
       "name": "Tenderloin Steak",
       "prices": [
-        { "size": "S", "price": 9.50, "label": "S: $9.50" },
-        { "size": "M", "price": 11.50, "label": "M: $11.50" },
-        { "size": "L", "price": 13.50, "label": "L: $13.50" },
-        { "size": "Jumbo", "price": 17.99, "label": "Jumbo: $17.99" }
+        { "size": "S", "price": 9.99, "label": "S: $9.99" },
+        { "size": "M", "price": 12.99, "label": "M: $12.99" },
+        { "size": "L", "price": 16.99, "label": "L: $16.99" }
       ],
       "category": "pita-wraps",
       "isVegan": false,
@@ -85,10 +84,9 @@
       "id": "shish-tawook",
       "name": "Shish Tawook",
       "prices": [
-        { "size": "S", "price": 9.50, "label": "S: $9.50" },
-        { "size": "M", "price": 11.50, "label": "M: $11.50" },
-        { "size": "L", "price": 13.50, "label": "L: $13.50" },
-        { "size": "Jumbo", "price": 17.99, "label": "Jumbo: $17.99" }
+        { "size": "S", "price": 8.99, "label": "S: $8.99" },
+        { "size": "M", "price": 11.99, "label": "M: $11.99" },
+        { "size": "L", "price": 14.99, "label": "L: $14.99" }
       ],
       "category": "pita-wraps",
       "isVegan": false,
@@ -112,10 +110,9 @@
       "id": "kofta-kabab",
       "name": "Kofta Kabab",
       "prices": [
-        { "size": "S", "price": 9.50, "label": "S: $9.50" },
-        { "size": "M", "price": 11.50, "label": "M: $11.50" },
-        { "size": "L", "price": 13.50, "label": "L: $13.50" },
-        { "size": "Jumbo", "price": 17.99, "label": "Jumbo: $17.99" }
+        { "size": "S", "price": 8.99, "label": "S: $8.99" },
+        { "size": "M", "price": 11.99, "label": "M: $11.99" },
+        { "size": "L", "price": 14.99, "label": "L: $14.99" }
       ],
       "category": "pita-wraps",
       "isVegan": false,
@@ -139,10 +136,9 @@
       "id": "regular-falafel",
       "name": "Regular Falafel",
       "prices": [
-        { "size": "S", "price": 7.50, "label": "S: $7.50" },
-        { "size": "M", "price": 9.50, "label": "M: $9.50" },
-        { "size": "L", "price": 11.50, "label": "L: $11.50" },
-        { "size": "Jumbo", "price": 15.99, "label": "Jumbo: $15.99" }
+        { "size": "S", "price": 6.99, "label": "S: $6.99" },
+        { "size": "M", "price": 8.99, "label": "M: $8.99" },
+        { "size": "L", "price": 10.99, "label": "L: $10.99" }
       ],
       "category": "pita-wraps",
       "isVegan": true,
@@ -166,10 +162,9 @@
       "id": "stuffed-falafel",
       "name": "Stuffed Falafel",
       "prices": [
-        { "size": "S", "price": 8.50, "label": "S: $8.50" },
-        { "size": "M", "price": 10.50, "label": "M: $10.50" },
-        { "size": "L", "price": 12.50, "label": "L: $12.50" },
-        { "size": "Jumbo", "price": 16.99, "label": "Jumbo: $16.99" }
+        { "size": "S", "price": 7.99, "label": "S: $7.99" },
+        { "size": "M", "price": 9.99, "label": "M: $9.99" },
+        { "size": "L", "price": 11.99, "label": "L: $11.99" }
       ],
       "category": "pita-wraps",
       "isVegan": true,
@@ -192,12 +187,7 @@
     {
       "id": "grilled-chicken",
       "name": "Grilled Chicken",
-      "prices": [
-        { "size": "S", "price": 9.50, "label": "S: $9.50" },
-        { "size": "M", "price": 11.50, "label": "M: $11.50" },
-        { "size": "L", "price": 13.50, "label": "L: $13.50" },
-        { "size": "Jumbo", "price": 17.99, "label": "Jumbo: $17.99" }
-      ],
+      "prices": [{ "size": "M", "price": 12.5, "label": "M: $12.50" }],
       "category": "pita-wraps",
       "isVegan": false,
       "customizations": [
@@ -221,10 +211,8 @@
     {
       "id": "beef-donair-platter",
       "name": "Beef Donair Platter",
-      "description": "Comes with rice, meat, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 14.99, "label": "$14.99" }
-      ],
+      "description": "All platters come with rice, meat, a choice of two sauces and garden salad/garlic potato",
+      "prices": [{ "size": "Regular", "price": 14.99, "label": "$14.99" }],
       "category": "platters",
       "isVegan": false,
       "customizations": [
@@ -246,10 +234,8 @@
     {
       "id": "chicken-shawarma-platter",
       "name": "Chicken Shawarma Platter",
-      "description": "Comes with rice, meat, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 14.99, "label": "$14.99" }
-      ],
+      "description": "All platters come with rice, meat, a choice of two sauces and garden salad/garlic potato",
+      "prices": [{ "size": "Regular", "price": 14.99, "label": "$14.99" }],
       "category": "platters",
       "isVegan": false,
       "customizations": [
@@ -271,10 +257,8 @@
     {
       "id": "tenderloin-steak-platter",
       "name": "Tenderloin Steak Platter",
-      "description": "Comes with rice, meat, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 16.99, "label": "$16.99" }
-      ],
+      "description": "All platters come with rice, meat, a choice of two sauces and garden salad/garlic potato",
+      "prices": [{ "size": "Regular", "price": 16.99, "label": "$16.99" }],
       "category": "platters",
       "isVegan": false,
       "customizations": [
@@ -296,10 +280,8 @@
     {
       "id": "shish-tawook-platter",
       "name": "Shish Tawook Platter",
-      "description": "Comes with rice, meat, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 16.99, "label": "$16.99" }
-      ],
+      "description": "All platters come with rice, meat, a choice of two sauces and garden salad/garlic potato",
+      "prices": [{ "size": "Regular", "price": 15.99, "label": "$15.99" }],
       "category": "platters",
       "isVegan": false,
       "customizations": [
@@ -321,10 +303,8 @@
     {
       "id": "kofta-kabab-platter",
       "name": "Kofta Kabab Platter",
-      "description": "Comes with rice, meat, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 16.99, "label": "$16.99" }
-      ],
+      "description": "All platters come with rice, meat, a choice of two sauces and garden salad/garlic potato",
+      "prices": [{ "size": "Regular", "price": 15.99, "label": "$15.99" }],
       "category": "platters",
       "isVegan": false,
       "customizations": [
@@ -343,38 +323,12 @@
         }
       ]
     },
-    {
-      "id": "regular-falafel-platter",
-      "name": "Regular Falafel Platter",
-      "description": "Comes with rice, falafel, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 13.99, "label": "$13.99" }
-      ],
-      "category": "platters",
-      "isVegan": true,
-      "customizations": [
-        {
-          "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
-          "type": "checkbox",
-          "required": true,
-          "maxSelections": 3,
-          "options": [
-            { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
-            { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
-            { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
-          ]
-        }
-      ]
-    },
+
     {
       "id": "grilled-chicken-platter",
       "name": "Grilled Chicken Platter",
-      "description": "Comes with rice, meat, choice of sauces and garden salad/garlic potato",
-      "prices": [
-        { "size": "Regular", "price": 16.99, "label": "$16.99" }
-      ],
+      "description": "All platters come with rice, meat, a choice of two sauces and garden salad/garlic potato",
+      "prices": [{ "size": "Regular", "price": 15.99, "label": "$15.99" }],
       "category": "platters",
       "isVegan": false,
       "customizations": [
@@ -396,6 +350,16 @@
   ],
   "special-platters": [
     {
+      "id": "beef-donair-fries",
+      "name": "Beef Donair Fries/Poutine",
+      "prices": [
+        { "size": "M", "price": 10.99, "label": "M: $10.99" },
+        { "size": "L", "price": 14.99, "label": "L: $14.99" }
+      ],
+      "category": "special-platters",
+      "isVegan": false
+    },
+    {
       "id": "chicken-shawarma-fries",
       "name": "Chicken Shawarma Fries/Poutine",
       "prices": [
@@ -409,42 +373,41 @@
       "id": "vegetarian-platter",
       "name": "Vegetarian Platter",
       "description": "Comes with 4 Falafels, Salad, Hummus, Garlic Potato/Fries/Rice",
-      "prices": [
-        { "size": "Regular", "price": 13.99, "label": "$13.99" }
-      ],
+      "prices": [{ "size": "Regular", "price": 13.99, "label": "$13.99" }],
       "category": "special-platters",
       "isVegan": true
     },
     {
       "id": "shawarma-bites",
       "name": "Shawarma Bites",
+      "prices": [{ "size": "Regular", "price": 14.99, "label": "$14.99" }],
+      "category": "special-platters",
+      "isVegan": false,
+      "description": "Comes with Salad and Fries"
+    },
+    {
+      "id": "chicken-shawarma-salad",
+      "name": "Chicken Shawarma Salad",
       "prices": [
-        { "size": "Regular", "price": 8.99, "label": "$8.99" }
+        { "size": "M", "price": 10.5, "label": "M: $10.50" },
+        { "size": "L", "price": 12.5, "label": "L: $12.50" }
       ],
       "category": "special-platters",
       "isVegan": false
     },
     {
-      "id": "chicken-caesar-salad",
-      "name": "Chicken Caesar Salad",
+      "id": "beef-donair-salad",
+      "name": "Beef Donair Salad",
       "prices": [
-        { "size": "Regular", "price": 12.99, "label": "$12.99" }
+        { "size": "M", "price": 10.5, "label": "M: $10.50" },
+        { "size": "L", "price": 12.5, "label": "L: $12.50" }
       ],
       "category": "special-platters",
       "isVegan": false
     },
     {
-      "id": "chicken-greek-salad",
-      "name": "Chicken Greek Salad",
-      "prices": [
-        { "size": "Regular", "price": 12.99, "label": "$12.99" }
-      ],
-      "category": "special-platters",
-      "isVegan": false
-    },
-    {
-      "id": "beef-shawarma-fries",
-      "name": "Beef Shawarma Fries/Poutine",
+      "id": "beef-donair-fries",
+      "name": "Beef Donair Fries/Poutine",
       "prices": [
         { "size": "M", "price": 10.99, "label": "M: $10.99" },
         { "size": "L", "price": 14.99, "label": "L: $14.99" }
@@ -453,11 +416,11 @@
       "isVegan": false
     },
     {
-      "id": "mix-shawarma-fries",
-      "name": "Mix Shawarma Fries/Poutine",
+      "id": "chicken-shawarma-poutine",
+      "name": "Chicken Shawarma Poutine",
       "prices": [
-        { "size": "M", "price": 11.99, "label": "M: $11.99" },
-        { "size": "L", "price": 15.99, "label": "L: $15.99" }
+        { "size": "M", "price": 10.99, "label": "M: $10.99" },
+        { "size": "L", "price": 14.99, "label": "L: $14.99" }
       ],
       "category": "special-platters",
       "isVegan": false
@@ -465,10 +428,31 @@
   ],
   "salads": [
     {
-      "id": "caesar-salad",
-      "name": "Caesar Salad",
+      "id": "fatoush",
+      "name": "Fatoush",
       "prices": [
-        { "size": "Regular", "price": 8.99, "label": "$8.99" }
+        { "size": "M", "price": 6.5, "label": "M: $6.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
+      ],
+      "category": "salads",
+      "isVegan": true
+    },
+    {
+      "id": "tabouli",
+      "name": "Tabouli",
+      "prices": [
+        { "size": "M", "price": 6.5, "label": "M: $6.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
+      ],
+      "category": "salads",
+      "isVegan": true
+    },
+    {
+      "id": "cesar-salad",
+      "name": "Cesar Salad",
+      "prices": [
+        { "size": "M", "price": 7.5, "label": "M: $7.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
       ],
       "category": "salads",
       "isVegan": false
@@ -477,28 +461,11 @@
       "id": "greek-salad",
       "name": "Greek Salad",
       "prices": [
-        { "size": "Regular", "price": 8.99, "label": "$8.99" }
+        { "size": "M", "price": 9.99, "label": "M: $9.99" },
+        { "size": "L", "price": 12.0, "label": "L: $12.00" }
       ],
       "category": "salads",
-      "isVegan": true
-    },
-    {
-      "id": "garden-salad",
-      "name": "Garden Salad",
-      "prices": [
-        { "size": "Regular", "price": 7.99, "label": "$7.99" }
-      ],
-      "category": "salads",
-      "isVegan": true
-    },
-    {
-      "id": "fattoush-salad",
-      "name": "Fattoush Salad",
-      "prices": [
-        { "size": "Regular", "price": 9.99, "label": "$9.99" }
-      ],
-      "category": "salads",
-      "isVegan": true
+      "isVegan": false
     }
   ],
   "desserts": [
@@ -506,77 +473,60 @@
       "id": "baklava",
       "name": "Baklava",
       "prices": [
-        { "size": "Regular", "price": 3.99, "label": "$3.99" }
+        { "size": "1pc", "price": 1.25, "label": "1pc: $1.25" },
+        { "size": "6pc", "price": 5.99, "label": "6pc: $5.99" }
       ],
       "category": "desserts",
       "isVegan": false
     },
     {
-      "id": "date-maamoul",
-      "name": "Date Maamoul",
-      "prices": [
-        { "size": "Regular", "price": 2.99, "label": "$2.99" }
-      ],
+      "id": "nanimo-bar",
+      "name": "Nanimo bar",
+      "prices": [{ "size": "1pc", "price": 1.99, "label": "1pc: $1.99" }],
       "category": "desserts",
-      "isVegan": true
+      "isVegan": false
     },
     {
-      "id": "knafeh",
-      "name": "Knafeh",
-      "prices": [
-        { "size": "Regular", "price": 5.99, "label": "$5.99" }
-      ],
+      "id": "brownie",
+      "name": "Brownie",
+      "prices": [{ "size": "1pc", "price": 2.99, "label": "1pc: $2.99" }],
       "category": "desserts",
       "isVegan": false
     }
   ],
   "beverages": [
     {
-      "id": "soft-drinks",
-      "name": "Soft Drinks",
-      "prices": [
-        { "size": "Can", "price": 1.50, "label": "Can: $1.50" },
-        { "size": "Bottle", "price": 3.00, "label": "Bottle: $3.00" }
-      ],
+      "id": "can-of-pop",
+      "name": "Can of Pop",
+      "prices": [{ "size": "Regular", "price": 1.5, "label": "$1.50" }],
       "category": "beverages",
       "isVegan": true
     },
     {
-      "id": "fresh-juice",
-      "name": "Fresh Juice",
-      "prices": [
-        { "size": "Can", "price": 1.50, "label": "Can: $1.50" },
-        { "size": "Bottle", "price": 3.00, "label": "Bottle: $3.00" }
-      ],
+      "id": "milkis",
+      "name": "Milkis",
+      "prices": [{ "size": "Regular", "price": 2.25, "label": "$2.25" }],
+      "category": "beverages",
+      "isVegan": false
+    },
+    {
+      "id": "bottle-pop-juice",
+      "name": "Bottle Pop/juice",
+      "prices": [{ "size": "Regular", "price": 2.99, "label": "$2.99" }],
       "category": "beverages",
       "isVegan": true
     },
     {
       "id": "ayran",
       "name": "Ayran",
-      "prices": [
-        { "size": "Can", "price": 1.50, "label": "Can: $1.50" },
-        { "size": "Bottle", "price": 3.00, "label": "Bottle: $3.00" }
-      ],
+      "prices": [{ "size": "Regular", "price": 2.99, "label": "$2.99" }],
       "category": "beverages",
       "isVegan": false
     },
     {
-      "id": "turkish-tea",
-      "name": "Turkish Tea",
-      "prices": [
-        { "size": "Regular", "price": 2.49, "label": "$2.49" }
-      ],
-      "category": "beverages",
-      "isVegan": true
-    },
-    {
       "id": "water",
       "name": "Water",
-      "prices": [
-        { "size": "Can", "price": 1.50, "label": "Can: $1.50" },
-        { "size": "Bottle", "price": 3.00, "label": "Bottle: $3.00" }
-      ],
+      "prices": [{ "size": "Regular", "price": 1.5, "label": "$1.50" }],
       "category": "beverages",
       "isVegan": true
     }
@@ -586,177 +536,189 @@
       "id": "hummus",
       "name": "Hummus",
       "prices": [
-        { "size": "S", "price": 4.99, "label": "S: $4.99" },
-        { "size": "L", "price": 7.99, "label": "L: $7.99" }
-      ],
-      "category": "dips",
-      "isVegan": true
-    },
-    {
-      "id": "baba-ganoush",
-      "name": "Baba Ganoush",
-      "prices": [
-        { "size": "S", "price": 4.99, "label": "S: $4.99" },
-        { "size": "L", "price": 7.99, "label": "L: $7.99" }
-      ],
-      "category": "dips",
-      "isVegan": true
-    },
-    {
-      "id": "muhammara",
-      "name": "Muhammara",
-      "prices": [
-        { "size": "S", "price": 4.99, "label": "S: $4.99" },
-        { "size": "L", "price": 7.99, "label": "L: $7.99" }
+        { "size": "M", "price": 5.5, "label": "M: $5.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
       ],
       "category": "dips",
       "isVegan": true,
-      "isSpicy": true
+      "description": "comes with one pita"
     },
     {
-      "id": "tzatziki",
-      "name": "Tzatziki",
+      "id": "tahini",
+      "name": "Tahini",
       "prices": [
-        { "size": "S", "price": 4.99, "label": "S: $4.99" },
-        { "size": "L", "price": 7.99, "label": "L: $7.99" }
+        { "size": "M", "price": 5.5, "label": "M: $5.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
       ],
       "category": "dips",
-      "isVegan": false
+      "isVegan": true
+    },
+    {
+      "id": "garlic-paste",
+      "name": "Garlic Paste",
+      "prices": [{ "size": "Regular", "price": 4.99, "label": "$4.99" }],
+      "category": "dips",
+      "isVegan": true
+    },
+    {
+      "id": "sweet-sauce",
+      "name": "Sweet Sauce",
+      "prices": [
+        { "size": "M", "price": 3.99, "label": "M: $3.99" },
+        { "size": "L", "price": 6.99, "label": "L: $6.99" }
+      ],
+      "category": "dips",
+      "isVegan": true
     },
     {
       "id": "garlic-sauce",
       "name": "Garlic Sauce",
       "prices": [
-        { "size": "S", "price": 3.99, "label": "S: $3.99" },
-        { "size": "L", "price": 6.99, "label": "L: $6.99" }
+        { "size": "M", "price": 5.5, "label": "M: $5.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
       ],
       "category": "dips",
       "isVegan": true
     },
     {
-      "id": "hot-sauce",
-      "name": "Hot Sauce",
+      "id": "taziki-sauce",
+      "name": "Taziki Sauce",
       "prices": [
-        { "size": "S", "price": 3.99, "label": "S: $3.99" },
-        { "size": "L", "price": 6.99, "label": "L: $6.99" }
+        { "size": "M", "price": 5.5, "label": "M: $5.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
       ],
       "category": "dips",
-      "isVegan": true,
-      "isSpicy": true
+      "isVegan": false
     }
   ],
   "sides": [
     {
-      "id": "rice",
-      "name": "Rice",
-      "prices": [
-        { "size": "S", "price": 3.99, "label": "S: $3.99" },
-        { "size": "L", "price": 5.99, "label": "L: $5.99" }
-      ],
-      "category": "sides",
-      "isVegan": true
-    },
-    {
       "id": "fries",
       "name": "Fries",
       "prices": [
-        { "size": "S", "price": 3.99, "label": "S: $3.99" },
-        { "size": "L", "price": 5.99, "label": "L: $5.99" }
-      ],
-      "category": "sides",
-      "isVegan": true
-    },
-    {
-      "id": "garlic-potatoes",
-      "name": "Garlic Potatoes",
-      "prices": [
         { "size": "S", "price": 4.99, "label": "S: $4.99" },
+        { "size": "M", "price": 5.99, "label": "M: $5.99" },
         { "size": "L", "price": 6.99, "label": "L: $6.99" }
       ],
       "category": "sides",
       "isVegan": true
     },
     {
-      "id": "pita-bread",
-      "name": "Pita Bread",
+      "id": "waffle-fries",
+      "name": "Waffle Fries",
       "prices": [
-        { "size": "Regular", "price": 1.99, "label": "$1.99" }
+        { "size": "S", "price": 5.49, "label": "S: $5.49" },
+        { "size": "M", "price": 6.49, "label": "M: $6.49" },
+        { "size": "L", "price": 7.49, "label": "L: $7.49" }
       ],
       "category": "sides",
       "isVegan": true
     },
     {
-      "id": "falafel-pieces",
-      "name": "Falafel (4 pieces)",
-      "prices": [
-        { "size": "Regular", "price": 5.99, "label": "$5.99" }
-      ],
+      "id": "spiral-potato",
+      "name": "Spiral potato",
+      "prices": [{ "size": "Regular", "price": 3.99, "label": "$3.99" }],
       "category": "sides",
       "isVegan": true
     },
     {
-      "id": "grilled-vegetables",
-      "name": "Grilled Vegetables",
+      "id": "poutine",
+      "name": "Poutine",
       "prices": [
-        { "size": "S", "price": 4.99, "label": "S: $4.99" },
-        { "size": "L", "price": 7.99, "label": "L: $7.99" }
-      ],
-      "category": "sides",
-      "isVegan": true
-    },
-    {
-      "id": "pickles",
-      "name": "Pickles",
-      "prices": [
-        { "size": "Regular", "price": 2.99, "label": "$2.99" }
-      ],
-      "category": "sides",
-      "isVegan": true
-    },
-    {
-      "id": "olives",
-      "name": "Olives",
-      "prices": [
-        { "size": "Regular", "price": 3.99, "label": "$3.99" }
-      ],
-      "category": "sides",
-      "isVegan": true
-    },
-    {
-      "id": "tabouleh",
-      "name": "Tabouleh",
-      "prices": [
-        { "size": "S", "price": 5.99, "label": "S: $5.99" },
-        { "size": "L", "price": 8.99, "label": "L: $8.99" }
-      ],
-      "category": "sides",
-      "isVegan": true
-    },
-    {
-      "id": "cheese",
-      "name": "Cheese",
-      "prices": [
-        { "size": "Regular", "price": 2.99, "label": "$2.99" }
+        { "size": "M", "price": 6.5, "label": "M: $6.50" },
+        { "size": "L", "price": 8.5, "label": "L: $8.50" }
       ],
       "category": "sides",
       "isVegan": false
+    },
+    {
+      "id": "garlic-potato",
+      "name": "Garlic Potato",
+      "prices": [
+        { "size": "S", "price": 5.49, "label": "S: $5.49" },
+        { "size": "M", "price": 6.49, "label": "M: $6.49" },
+        { "size": "L", "price": 7.49, "label": "L: $7.49" }
+      ],
+      "category": "sides",
+      "isVegan": true
+    },
+    {
+      "id": "chicken-wings",
+      "name": "Chicken Wings",
+      "prices": [
+        { "size": "12pc", "price": 11.99, "label": "12pc: $11.99" },
+        { "size": "24pc", "price": 22.99, "label": "24pc: $22.99" }
+      ],
+      "category": "sides",
+      "isVegan": false,
+      "description": "Hot, Buffalo, BBQ, Terriyaki, Honey Garlic, Salt & Pepper."
+    },
+    {
+      "id": "onion-rings",
+      "name": "Onion Rings",
+      "prices": [
+        { "size": "S", "price": 5.49, "label": "S: $5.49" },
+        { "size": "M", "price": 6.49, "label": "M: $6.49" },
+        { "size": "L", "price": 7.49, "label": "L: $7.49" }
+      ],
+      "category": "sides",
+      "isVegan": true
+    },
+    {
+      "id": "large-samosa",
+      "name": "Large Samosa",
+      "prices": [
+        { "size": "1pc", "price": 2.99, "label": "1pc: $2.99" },
+        { "size": "2pc", "price": 4.99, "label": "2pc: $4.99" }
+      ],
+      "category": "sides",
+      "isVegan": true
+    },
+    {
+      "id": "falafel",
+      "name": "Falafel",
+      "prices": [
+        { "size": "1pc", "price": 0.99, "label": "1pc: $0.99" },
+        { "size": "6pc", "price": 4.99, "label": "6pc: $4.99" }
+      ],
+      "category": "sides",
+      "isVegan": true
+    },
+    {
+      "id": "stuffed-falafel-side",
+      "name": "Stuffed Falafel",
+      "prices": [
+        { "size": "1pc", "price": 1.49, "label": "1pc: $1.49" },
+        { "size": "6pc", "price": 6.99, "label": "6pc: $6.99" }
+      ],
+      "category": "sides",
+      "isVegan": true
+    },
+    {
+      "id": "vine-grape-leaves",
+      "name": "Vine Grape leaves",
+      "prices": [
+        { "size": "1pc", "price": 1.0, "label": "1pc: $1.00" },
+        { "size": "12pc", "price": 10.0, "label": "12pc: $10.00" }
+      ],
+      "category": "sides",
+      "isVegan": true
     }
   ],
   "pies": [
     {
-      "id": "spinach-pie",
-      "name": "Spinach Pie",
-      "prices": [
-        { "size": "Regular", "price": 4.99, "label": "$4.99" }
-      ],
-      "category": "pies",
-      "isVegan": true
-    },
-    {
       "id": "meat-pie",
       "name": "Meat Pie",
+      "prices": [{ "size": "Regular", "price": 4.99, "label": "$4.99" }],
+      "category": "pies",
+      "isVegan": false
+    },
+    {
+      "id": "mini-meat-pies",
+      "name": "Mini Meat Pies",
       "prices": [
-        { "size": "Regular", "price": 5.99, "label": "$5.99" }
+        { "size": "1pc", "price": 1.99, "label": "1pc: $1.99" },
+        { "size": "6pc", "price": 9.99, "label": "6pc: $9.99" }
       ],
       "category": "pies",
       "isVegan": false

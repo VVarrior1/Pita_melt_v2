@@ -12,7 +12,8 @@ export interface MenuItem {
 }
 
 export interface Price {
-  size: 'S' | 'M' | 'L' | 'Jumbo' | 'Regular' | 'Can' | 'Bottle';
+  // Size label for pricing tier (e.g., S, M, L, Jumbo, 1pc, 6pc, 12pc, Can, Bottle, Regular)
+  size: string;
   price: number;
   label: string; // e.g., "S: $8.50"
 }
@@ -20,7 +21,7 @@ export interface Price {
 export interface Customization {
   id: string;
   name: string;
-  type: 'radio' | 'checkbox' | 'select';
+  type: "radio" | "checkbox" | "select";
   required: boolean;
   maxSelections?: number; // For checkbox type - max number of selections allowed
   options: CustomizationOption[];
@@ -32,16 +33,16 @@ export interface CustomizationOption {
   priceModifier: number; // +/- price change
 }
 
-export type MenuCategory = 
-  | 'pita-wraps' 
-  | 'platters' 
-  | 'special-platters' 
-  | 'salads' 
-  | 'desserts' 
-  | 'beverages' 
-  | 'dips' 
-  | 'sides' 
-  | 'pies';
+export type MenuCategory =
+  | "pita-wraps"
+  | "platters"
+  | "special-platters"
+  | "salads"
+  | "desserts"
+  | "beverages"
+  | "dips"
+  | "sides"
+  | "pies";
 
 export interface CartItem {
   id: string;
@@ -71,21 +72,21 @@ export interface CustomerInfo {
   phone?: string;
 }
 
-export type OrderStatus = 
-  | 'pending'           // Just created, payment not processed
-  | 'payment_processing' // Payment in progress
-  | 'confirmed'         // Payment successful, order confirmed
-  | 'preparing'         // Kitchen is preparing
-  | 'ready'            // Ready for pickup
-  | 'completed'        // Customer picked up
-  | 'cancelled';       // Order cancelled
+export type OrderStatus =
+  | "pending" // Just created, payment not processed
+  | "payment_processing" // Payment in progress
+  | "confirmed" // Payment successful, order confirmed
+  | "preparing" // Kitchen is preparing
+  | "ready" // Ready for pickup
+  | "completed" // Customer picked up
+  | "cancelled"; // Order cancelled
 
-export type PaymentStatus = 
-  | 'pending'
-  | 'processing' 
-  | 'succeeded'
-  | 'failed'
-  | 'cancelled';
+export type PaymentStatus =
+  | "pending"
+  | "processing"
+  | "succeeded"
+  | "failed"
+  | "cancelled";
 
 export interface MenuData {
   [key: string]: MenuItem[];
