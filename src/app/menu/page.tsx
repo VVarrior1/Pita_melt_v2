@@ -147,8 +147,8 @@ export default function MenuPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {displayedItems.map((item) => (
-                  <MenuItemCard key={item.id} item={item} />
+                {displayedItems.map((item, index) => (
+                  <MenuItemCard key={`${item.id}-${index}`} item={item} />
                 ))}
               </div>
             )}

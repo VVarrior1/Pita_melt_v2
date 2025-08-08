@@ -33,7 +33,7 @@ export interface HeroProps {
  */
 export default function Hero({
   backgroundImageSrc = "/images/shawarmabg.webp",
-  logoSrc = undefined,
+  logoSrc = "/images/PitaMeltLogo1.jpg",
   title = (
     <>
       Welcome to <span className="text-[#f17105]">Pita Melt</span>
