@@ -1,7 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
-import { PhoneCall, Utensils } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import React from "react";
+import Link from "next/link";
+import { PhoneCall, Utensils } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 /**
  * MobileOrderBar: sticky bottom bar on small screens to drive quick actions.
@@ -24,4 +24,3 @@ export default function MobileOrderBar() {
     </div>
   );
 }
-

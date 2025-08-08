@@ -1,8 +1,8 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Leaf, Timer, HeartHandshake } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Leaf, Timer, HeartHandshake } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 /**
  * HeroProps defines the configurable properties of the homepage hero section.
@@ -20,7 +20,11 @@ export interface HeroProps {
   /** Primary CTA button configuration */
   primaryCta?: { href: string; label: string };
   /** Secondary CTA button configuration */
-  secondaryCta?: { href: string; label: string; variant?: 'outline' | 'secondary' };
+  secondaryCta?: {
+    href: string;
+    label: string;
+    variant?: "outline" | "secondary";
+  };
 }
 
 /**
@@ -28,16 +32,16 @@ export interface HeroProps {
  * and a small set of trust badges to improve conversion without heavy styling.
  */
 export default function Hero({
-  backgroundImageSrc = '/images/shawarmabg.webp',
-  logoSrc = '/images/PitaMeltLogo1.jpg',
+  backgroundImageSrc = "/images/shawarmabg.webp",
+  logoSrc = undefined,
   title = (
     <>
       Welcome to <span className="text-[#f17105]">Pita Melt</span>
     </>
   ),
-  subtitle = 'Authentic Mediterranean flavors in Calgary. Fresh, fast, and made with love.',
-  primaryCta = { href: '/menu', label: 'Order Online Now' },
-  secondaryCta = { href: '/about', label: 'Learn More', variant: 'outline' }
+  subtitle = "Authentic Mediterranean flavors in Calgary. Fresh, fast, and made with love.",
+  primaryCta = { href: "/menu", label: "Order Online Now" },
+  secondaryCta = { href: "/about", label: "Learn More", variant: "outline" },
 }: HeroProps) {
   return (
     <section className="relative min-h-[78vh] flex items-center justify-center bg-black text-white">
@@ -70,20 +74,24 @@ export default function Hero({
         )}
 
         <h1 className="text-4xl md:text-6xl font-bold mb-4">{title}</h1>
-        <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-6">{subtitle}</p>
+        <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-6">
+          {subtitle}
+        </p>
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {primaryCta && (
             <Link href={primaryCta.href} aria-label={primaryCta.label}>
-              <Button size="lg" className="w-full sm:w-auto">{primaryCta.label}</Button>
+              <Button size="lg" className="w-full sm:w-auto">
+                {primaryCta.label}
+              </Button>
             </Link>
           )}
           {secondaryCta && (
             <Link href={secondaryCta.href} aria-label={secondaryCta.label}>
               <Button
                 size="lg"
-                variant={secondaryCta.variant ?? 'outline'}
+                variant={secondaryCta.variant ?? "outline"}
                 className="w-full sm:w-auto"
               >
                 {secondaryCta.label}
@@ -111,4 +119,3 @@ export default function Hero({
     </section>
   );
 }
-

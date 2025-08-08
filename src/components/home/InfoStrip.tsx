@@ -1,5 +1,5 @@
-import React from 'react';
-import { Phone, MapPin, Clock } from 'lucide-react';
+import React from "react";
+import { Phone, MapPin, Clock } from "lucide-react";
 
 /**
  * InfoStrip: concise contact and hours bar for quick access on mobile.
@@ -14,7 +14,10 @@ export default function InfoStrip() {
               <Phone className="h-7 w-7 text-white" />
             </div>
             <h3 className="text-lg font-semibold mb-1">Call Us</h3>
-            <a href="tel:(403) 293-5809" className="text-[#f17105] hover:text-[#e55a00] transition-colors">
+            <a
+              href="tel:(403) 293-5809"
+              className="text-[#f17105] hover:text-[#e55a00] transition-colors"
+            >
               (403) 293-5809
             </a>
           </div>
@@ -50,4 +53,3 @@ export default function InfoStrip() {
     </section>
   );
 }
-
