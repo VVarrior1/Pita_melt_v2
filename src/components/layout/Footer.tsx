@@ -2,8 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, MapPin, Instagram } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : undefined;
+  const isUnderDevelopment = pathname === '/';
   return (
     <footer className="bg-[#071013] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -41,21 +44,27 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-[#f17105] mb-4">Quick Links</h3>
             <div className="space-y-2">
-              <Link href="/" className="block text-gray-300 hover:text-white transition-colors">
-                Home
-              </Link>
-              <Link href="/menu" className="block text-gray-300 hover:text-white transition-colors">
-                Menu
-              </Link>
-              <Link href="/about" className="block text-gray-300 hover:text-white transition-colors">
-                About Us
-              </Link>
-              <Link href="/catering" className="block text-gray-300 hover:text-white transition-colors">
-                Catering
-              </Link>
-              <Link href="/contact" className="block text-gray-300 hover:text-white transition-colors">
-                Contact
-              </Link>
+              {isUnderDevelopment ? (
+                <p className="text-gray-500 text-sm">Navigation disabled during development.</p>
+              ) : (
+                <>
+                  <Link href="/" className="block text-gray-300 hover:text-white transition-colors">
+                    Home
+                  </Link>
+                  <Link href="/menu" className="block text-gray-300 hover:text-white transition-colors">
+                    Menu
+                  </Link>
+                  <Link href="/about" className="block text-gray-300 hover:text-white transition-colors">
+                    About Us
+                  </Link>
+                  <Link href="/catering" className="block text-gray-300 hover:text-white transition-colors">
+                    Catering
+                  </Link>
+                  <Link href="/contact" className="block text-gray-300 hover:text-white transition-colors">
+                    Contact
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 

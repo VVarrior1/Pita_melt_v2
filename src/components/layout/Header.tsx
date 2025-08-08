@@ -6,12 +6,15 @@ import Image from 'next/image';
 import { ShoppingCart, Menu, X, Phone, MapPin } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from '@/components/ui/Button';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { getTotalItems, toggleCart } = useCartStore();
   const totalItems = getTotalItems();
+  const pathname = usePathname();
+  const isUnderDevelopment = pathname === '/';
 
   useEffect(() => {
     setMounted(true);
@@ -42,19 +45,22 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-white hover:text-[#f17105] transition-colors duration-200"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+          {!isUnderDevelopment && (
+            <nav className="hidden md:flex space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-white hover:text-[#f17105] transition-colors duration-200"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {/* Contact Info & Cart */}
+          {!isUnderDevelopment && (
           <div className="hidden md:flex items-center space-x-4">
             {/* Phone */}
             <a
@@ -91,8 +97,10 @@ export default function Header() {
               )}
             </Button>
           </div>
+          )}
 
           {/* Mobile menu button & cart */}
+          {!isUnderDevelopment && (
           <div className="md:hidden flex items-center space-x-2">
             <Button
               variant="ghost"
@@ -120,10 +128,11 @@ export default function Header() {
               )}
             </button>
           </div>
+          )}
         </div>
 
         {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
+        {!isUnderDevelopment && isMobileMenuOpen && (
           <div className="md:hidden bg-[#071013] border-t border-gray-700">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
