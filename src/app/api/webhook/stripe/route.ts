@@ -123,6 +123,19 @@ export async function POST(request: NextRequest) {
              );
              console.log("🆔 Order ID:", data?.[0]?.id);
              console.log("🔔 NEW ORDER INSERTED - Admin should be notified via Realtime!");
+             
+             // Manually trigger a Realtime broadcast since auto-detection might not work
+             try {
+               const broadcastChannel = supabaseAdmin.channel('order-notifications');
+               await broadcastChannel.send({
+                 type: 'broadcast',
+                 event: 'new-order',
+                 payload: { orderId: data?.[0]?.id, timestamp: new Date().toISOString() }
+               });
+               console.log("📡 Sent manual broadcast notification for new order");
+             } catch (broadcastError) {
+               console.error("Failed to send broadcast:", broadcastError);
+             }
            }
         } catch (error) {
           console.error("Error processing checkout session:", error);

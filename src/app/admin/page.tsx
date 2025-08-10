@@ -190,27 +190,34 @@ export default function AdminPage() {
           ordersData.map((order: Order) => order.id)
         );
 
-        // Check for new orders - only notify for orders created in the last 30 seconds
+        // Check for new orders - only notify for orders created in the last 10 seconds
         if (showNotification) {
           console.log("🔔 Checking for new orders...");
           console.log("📋 lastOrderIds.size:", lastOrderIds.size);
 
           const now = new Date();
-          const thirtySecondsAgo = new Date(now.getTime() - 30000);
+          const tenSecondsAgo = new Date(now.getTime() - 10000);
 
-          // Find orders that are both NEW (not in lastOrderIds) AND recent (created in last 30 seconds)
+          // Find orders that are both NEW (not in lastOrderIds) AND recent (created in last 10 seconds)
           const newRecentOrders = ordersData.filter((order: Order) => {
             const isNew = !lastOrderIds.has(order.id);
             const orderTime = new Date(order.createdAt);
-            const isRecent = orderTime > thirtySecondsAgo;
+            const isRecent = orderTime > tenSecondsAgo;
 
-            console.log(`Order ${order.id}: isNew=${isNew}, isRecent=${isRecent}, orderTime=${orderTime.toISOString()}`);
+            console.log(
+              `Order ${
+                order.id
+              }: isNew=${isNew}, isRecent=${isRecent}, orderTime=${orderTime.toISOString()}`
+            );
 
             return isNew && isRecent;
           });
 
           console.log("🆕 New recent orders found:", newRecentOrders.length);
-          console.log("🆕 New recent order IDs:", newRecentOrders.map((o: Order) => o.id));
+          console.log(
+            "🆕 New recent order IDs:",
+            newRecentOrders.map((o: Order) => o.id)
+          );
 
           if (newRecentOrders.length > 0) {
             console.log("🔊 Playing notification sound for new recent orders!");
@@ -250,44 +257,55 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (isAuthenticated && !isCheckingAuth) {
+      // Initial fetch without notification
       fetchOrders();
-      // Real-time: listen for new orders and refresh immediately
-      const channel = supabase
-        .channel("orders-realtime", {
-          config: {
-            broadcast: { self: true },
-            presence: { key: "admin" }
-          }
-        })
+      
+      // Listen for Postgres changes
+      const ordersChannel = supabase
+        .channel("orders-realtime")
         .on(
           "postgres_changes",
-          { 
-            event: "INSERT", 
-            schema: "public", 
+          {
+            event: "INSERT",
+            schema: "public",
             table: "orders",
-            filter: undefined
           },
           (payload) => {
-            console.log("🚨 REALTIME INSERT DETECTED!", payload);
-            console.log("🔔 Triggering fetchOrders(true) from Realtime...");
-            // Add a small delay to ensure the order is fully inserted
+            console.log("🚨 POSTGRES INSERT DETECTED!", payload);
             setTimeout(() => {
               fetchOrders(true);
             }, 500);
           }
         )
         .subscribe((status) => {
-          console.log("📡 Realtime subscription status:", status);
+          console.log("📡 Orders Realtime status:", status);
         });
 
-      // Simple polling fallback (no notifications to avoid spam)
+      // Listen for manual broadcast from webhook
+      const broadcastChannel = supabase
+        .channel("order-notifications")
+        .on(
+          "broadcast",
+          { event: "new-order" },
+          (payload) => {
+            console.log("📢 BROADCAST NEW ORDER RECEIVED!", payload);
+            // Immediately fetch with notification
+            fetchOrders(true);
+          }
+        )
+        .subscribe((status) => {
+          console.log("📡 Broadcast channel status:", status);
+        });
+
+      // Aggressive polling every 2 seconds but only notify for truly new orders
       const interval = setInterval(() => {
-        console.log("⏰ Polling for order updates (no notifications)...");
-        fetchOrders(false);
-      }, 5000);
+        fetchOrders(true); // Use notification mode but with time-based filtering
+      }, 2000);
+      
       return () => {
         clearInterval(interval);
-        supabase.removeChannel(channel);
+        supabase.removeChannel(ordersChannel);
+        supabase.removeChannel(broadcastChannel);
       };
     }
   }, [isAuthenticated, isCheckingAuth]);
