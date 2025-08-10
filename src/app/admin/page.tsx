@@ -20,7 +20,10 @@ export default function AdminPage() {
   const [lastOrderIds, setLastOrderIds] = useState<Set<string>>(new Set());
   const [lastCheckedTime, setLastCheckedTime] = useState<Date>(new Date());
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [notifiedOrderIds, setNotifiedOrderIds] = useState<Set<string>>(new Set());
+  const [unacceptedOrderIds, setUnacceptedOrderIds] = useState<Set<string>>(new Set());
   const audioContextRef = useRef<AudioContext | null>(null);
+  const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const NOTIFICATION_DURATION_SEC = 1.8;
   // Louder overall level (master) and strong per-note peak
   const MASTER_GAIN = 1.0; // 0.0 - 1.0 is typical unclipped range
@@ -55,6 +58,33 @@ export default function AdminPage() {
       }
     }
     return audioContextRef.current;
+  };
+
+  const startContinuousNotification = () => {
+    // Clear any existing interval
+    if (notificationIntervalRef.current) {
+      clearInterval(notificationIntervalRef.current);
+    }
+
+    // Play immediately
+    playNotificationSound();
+
+    // Then play every 3 seconds
+    notificationIntervalRef.current = setInterval(() => {
+      if (unacceptedOrderIds.size > 0) {
+        playNotificationSound();
+      } else {
+        // Stop ringing if all orders are accepted
+        stopContinuousNotification();
+      }
+    }, 3000);
+  };
+
+  const stopContinuousNotification = () => {
+    if (notificationIntervalRef.current) {
+      clearInterval(notificationIntervalRef.current);
+      notificationIntervalRef.current = null;
+    }
   };
 
   const playNotificationSound = () => {
@@ -203,14 +233,14 @@ export default function AdminPage() {
             const isNew = !lastOrderIds.has(order.id);
             const orderTime = new Date(order.createdAt);
             const isRecent = orderTime > tenSecondsAgo;
+            // Also check if we haven't already notified for this order
+            const notYetNotified = !notifiedOrderIds.has(order.id);
 
             console.log(
-              `Order ${
-                order.id
-              }: isNew=${isNew}, isRecent=${isRecent}, orderTime=${orderTime.toISOString()}`
+              `Order ${order.id}: isNew=${isNew}, isRecent=${isRecent}, notYetNotified=${notYetNotified}, orderTime=${orderTime.toISOString()}`
             );
 
-            return isNew && isRecent;
+            return isNew && isRecent && notYetNotified;
           });
 
           console.log("🆕 New recent orders found:", newRecentOrders.length);
@@ -220,9 +250,20 @@ export default function AdminPage() {
           );
 
           if (newRecentOrders.length > 0) {
-            console.log("🔊 Playing notification sound for new recent orders!");
-            // Always play notification sound for real new orders
-            playNotificationSound();
+            console.log("🔊 Starting continuous notification for new orders!");
+            
+            // Mark these orders as notified
+            const newNotifiedIds = new Set(notifiedOrderIds);
+            const newUnacceptedIds = new Set(unacceptedOrderIds);
+            newRecentOrders.forEach((order: Order) => {
+              newNotifiedIds.add(order.id);
+              // Only add to unaccepted if status is confirmed (not yet accepted)
+              if (order.status === "confirmed") {
+                newUnacceptedIds.add(order.id);
+              }
+            });
+            setNotifiedOrderIds(newNotifiedIds);
+            setUnacceptedOrderIds(newUnacceptedIds);
 
             // Show toast notification
             toast.success(
@@ -233,6 +274,9 @@ export default function AdminPage() {
                 duration: 4000,
               }
             );
+
+            // Start continuous ringing if not already ringing
+            startContinuousNotification();
           } else {
             console.log("😴 No new recent orders detected");
           }
@@ -259,7 +303,7 @@ export default function AdminPage() {
     if (isAuthenticated && !isCheckingAuth) {
       // Initial fetch without notification
       fetchOrders();
-      
+
       // Listen for Postgres changes
       const ordersChannel = supabase
         .channel("orders-realtime")
@@ -284,15 +328,11 @@ export default function AdminPage() {
       // Listen for manual broadcast from webhook
       const broadcastChannel = supabase
         .channel("order-notifications")
-        .on(
-          "broadcast",
-          { event: "new-order" },
-          (payload) => {
-            console.log("📢 BROADCAST NEW ORDER RECEIVED!", payload);
-            // Immediately fetch with notification
-            fetchOrders(true);
-          }
-        )
+        .on("broadcast", { event: "new-order" }, (payload) => {
+          console.log("📢 BROADCAST NEW ORDER RECEIVED!", payload);
+          // Immediately fetch with notification
+          fetchOrders(true);
+        })
         .subscribe((status) => {
           console.log("📡 Broadcast channel status:", status);
         });
@@ -301,9 +341,10 @@ export default function AdminPage() {
       const interval = setInterval(() => {
         fetchOrders(true); // Use notification mode but with time-based filtering
       }, 2000);
-      
+
       return () => {
         clearInterval(interval);
+        stopContinuousNotification();
         supabase.removeChannel(ordersChannel);
         supabase.removeChannel(broadcastChannel);
       };
@@ -332,6 +373,21 @@ export default function AdminPage() {
     } catch (error) {
       toast.error("Authentication failed");
     }
+  };
+
+  const acceptOrder = async (orderId: string) => {
+    // Remove from unaccepted orders
+    const newUnacceptedIds = new Set(unacceptedOrderIds);
+    newUnacceptedIds.delete(orderId);
+    setUnacceptedOrderIds(newUnacceptedIds);
+
+    // Stop ringing if no more unaccepted orders
+    if (newUnacceptedIds.size === 0) {
+      stopContinuousNotification();
+    }
+
+    // Update order status to preparing
+    await updateOrderStatus(orderId, "preparing");
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
@@ -400,8 +456,12 @@ export default function AdminPage() {
       updatedAt: new Date(),
     };
 
-    // Play the notification sound for simulated orders too
-    playNotificationSound();
+    // Add to notified and unaccepted orders
+    setNotifiedOrderIds(prev => new Set([...prev, fake.id]));
+    setUnacceptedOrderIds(prev => new Set([...prev, fake.id]));
+    
+    // Start continuous notification
+    startContinuousNotification();
     toast.success("🔔 New order received (simulation)");
     setOrders((prev) => [fake, ...prev]);
   };
@@ -587,6 +647,7 @@ export default function AdminPage() {
                 key={order.id}
                 order={order}
                 onUpdateStatus={updateOrderStatus}
+                onAcceptOrder={acceptOrder}
               />
             ))
           )}

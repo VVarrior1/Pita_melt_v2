@@ -17,11 +17,13 @@ import { Button } from "@/components/ui/Button";
 interface AdminOrderCardProps {
   order: Order;
   onUpdateStatus: (orderId: string, newStatus: OrderStatus) => void;
+  onAcceptOrder?: (orderId: string) => void;
 }
 
 export default function AdminOrderCard({
   order,
   onUpdateStatus,
+  onAcceptOrder,
 }: AdminOrderCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -189,13 +191,24 @@ export default function AdminOrderCard({
               </div>
             </div>
 
-            {/* Status Update Button */}
-            {getNextStatus(order.status) && (
+            {/* Accept Order Button - Only show for confirmed orders */}
+            {order.status === "confirmed" && onAcceptOrder && (
+              <Button
+                onClick={() => onAcceptOrder(order.id)}
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 animate-pulse"
+              >
+                Accept Order
+              </Button>
+            )}
+            
+            {/* Status Update Button - Hide for confirmed orders since we have Accept */}
+            {order.status !== "confirmed" && getNextStatus(order.status) && (
               <Button
                 onClick={handleStatusUpdate}
                 isLoading={isUpdating}
                 size="sm"
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 {getNextStatusLabel(order.status)}
               </Button>
