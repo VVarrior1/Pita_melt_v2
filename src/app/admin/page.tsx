@@ -18,6 +18,7 @@ export default function AdminPage() {
     "active"
   );
   const [lastOrderIds, setLastOrderIds] = useState<Set<string>>(new Set());
+  const [lastCheckedTime, setLastCheckedTime] = useState<Date>(new Date());
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const NOTIFICATION_DURATION_SEC = 1.8;
@@ -189,38 +190,44 @@ export default function AdminPage() {
           ordersData.map((order: Order) => order.id)
         );
 
-        // Check for new orders by comparing IDs, not just counts
+        // Check for new orders - only notify for orders created in the last 30 seconds
         if (showNotification) {
           console.log("🔔 Checking for new orders...");
           console.log("📋 lastOrderIds.size:", lastOrderIds.size);
 
-          // Always check for new orders, even if lastOrderIds is empty (first load)
-          const newOrders = ordersData.filter(
-            (order: Order) => !lastOrderIds.has(order.id)
-          );
+          const now = new Date();
+          const thirtySecondsAgo = new Date(now.getTime() - 30000);
 
-          console.log("🆕 New orders found:", newOrders.length);
-          console.log(
-            "🆕 New order IDs:",
-            newOrders.map((o: Order) => o.id)
-          );
+          // Find orders that are both NEW (not in lastOrderIds) AND recent (created in last 30 seconds)
+          const newRecentOrders = ordersData.filter((order: Order) => {
+            const isNew = !lastOrderIds.has(order.id);
+            const orderTime = new Date(order.createdAt);
+            const isRecent = orderTime > thirtySecondsAgo;
 
-          if (newOrders.length > 0) {
-            console.log("🔊 Playing notification sound for new orders!");
+            console.log(`Order ${order.id}: isNew=${isNew}, isRecent=${isRecent}, orderTime=${orderTime.toISOString()}`);
+
+            return isNew && isRecent;
+          });
+
+          console.log("🆕 New recent orders found:", newRecentOrders.length);
+          console.log("🆕 New recent order IDs:", newRecentOrders.map((o: Order) => o.id));
+
+          if (newRecentOrders.length > 0) {
+            console.log("🔊 Playing notification sound for new recent orders!");
             // Always play notification sound for real new orders
             playNotificationSound();
 
             // Show toast notification
             toast.success(
-              `🔔 ${newOrders.length} new order${
-                newOrders.length > 1 ? "s" : ""
+              `🔔 ${newRecentOrders.length} new order${
+                newRecentOrders.length > 1 ? "s" : ""
               } received!`,
               {
                 duration: 4000,
               }
             );
           } else {
-            console.log("😴 No new orders detected");
+            console.log("😴 No new recent orders detected");
           }
         }
 
@@ -246,21 +253,38 @@ export default function AdminPage() {
       fetchOrders();
       // Real-time: listen for new orders and refresh immediately
       const channel = supabase
-        .channel("orders-realtime")
+        .channel("orders-realtime", {
+          config: {
+            broadcast: { self: true },
+            presence: { key: "admin" }
+          }
+        })
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "orders" },
+          { 
+            event: "INSERT", 
+            schema: "public", 
+            table: "orders",
+            filter: undefined
+          },
           (payload) => {
             console.log("🚨 REALTIME INSERT DETECTED!", payload);
             console.log("🔔 Triggering fetchOrders(true) from Realtime...");
-            // Immediately fetch and notify
-            fetchOrders(true);
+            // Add a small delay to ensure the order is fully inserted
+            setTimeout(() => {
+              fetchOrders(true);
+            }, 500);
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log("📡 Realtime subscription status:", status);
+        });
 
-      // Polling fallback (keeps UI fresh if realtime disconnects)
-      const interval = setInterval(() => fetchOrders(true), 10000);
+      // Simple polling fallback (no notifications to avoid spam)
+      const interval = setInterval(() => {
+        console.log("⏰ Polling for order updates (no notifications)...");
+        fetchOrders(false);
+      }, 5000);
       return () => {
         clearInterval(interval);
         supabase.removeChannel(channel);
