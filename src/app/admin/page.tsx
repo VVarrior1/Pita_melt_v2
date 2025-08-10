@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Lock, RefreshCw, Package } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { supabase } from "@/lib/supabase";
 import { Order, OrderStatus } from "@/types/menu";
 import AdminOrderCard from "@/components/admin/AdminOrderCard";
 import toast from "react-hot-toast";
@@ -20,7 +21,9 @@ export default function AdminPage() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const NOTIFICATION_DURATION_SEC = 1.8;
-  const NOTIFICATION_VOLUME = 0.35;
+  // Louder overall level (master) and strong per-note peak
+  const MASTER_GAIN = 1.0; // 0.0 - 1.0 is typical unclipped range
+  const NOTE_PEAK_GAIN = 2.0; // allow brief, punchy peaks
 
   // Check authentication status after component mounts (client-side only)
   useEffect(() => {
@@ -66,7 +69,7 @@ export default function AdminPage() {
       // Master envelope for overall level
       const masterGain = audioContext.createGain();
       masterGain.gain.setValueAtTime(0, t0);
-      masterGain.gain.linearRampToValueAtTime(NOTIFICATION_VOLUME, t0 + 0.03);
+      masterGain.gain.linearRampToValueAtTime(MASTER_GAIN, t0 + 0.03);
       masterGain.gain.exponentialRampToValueAtTime(
         0.0001,
         t0 + NOTIFICATION_DURATION_SEC
@@ -75,14 +78,14 @@ export default function AdminPage() {
       // Gentle low-pass to soften the tone
       const filter = audioContext.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(3000, t0);
+      filter.frequency.setValueAtTime(6000, t0);
       filter.Q.setValueAtTime(0.8, t0);
 
       // Simple echo for a pleasant tail
       const delay = audioContext.createDelay();
       delay.delayTime.value = 0.16;
       const feedback = audioContext.createGain();
-      feedback.gain.value = 0.22;
+      feedback.gain.value = 0.3;
 
       // Wiring
       filter.connect(delay);
@@ -107,7 +110,7 @@ export default function AdminPage() {
         // Per-note envelope
         noteGain.gain.setValueAtTime(0, t0 + start);
         noteGain.gain.linearRampToValueAtTime(
-          NOTIFICATION_VOLUME,
+          NOTE_PEAK_GAIN,
           t0 + start + 0.02
         );
         noteGain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
@@ -166,19 +169,35 @@ export default function AdminPage() {
 
   const fetchOrders = async (showNotification = false) => {
     try {
+      console.log("🔍 fetchOrders called with showNotification:", showNotification);
+      console.log("📋 Current lastOrderIds size:", lastOrderIds.size);
+      console.log("📋 Current lastOrderIds:", Array.from(lastOrderIds));
+      
       const response = await fetch("/api/orders");
       if (response.ok) {
         const ordersData = await response.json();
+        console.log("📦 Fetched orders count:", ordersData.length);
+        console.log("📦 Fetched order IDs:", ordersData.map((o: Order) => o.id));
+        
         const currentOrderIds = new Set(
           ordersData.map((order: Order) => order.id)
         );
 
         // Check for new orders by comparing IDs, not just counts
-        if (showNotification && lastOrderIds.size > 0) {
+        if (showNotification) {
+          console.log("🔔 Checking for new orders...");
+          console.log("📋 lastOrderIds.size:", lastOrderIds.size);
+          
+          // Always check for new orders, even if lastOrderIds is empty (first load)
           const newOrders = ordersData.filter(
             (order: Order) => !lastOrderIds.has(order.id)
           );
+          
+          console.log("🆕 New orders found:", newOrders.length);
+          console.log("🆕 New order IDs:", newOrders.map((o: Order) => o.id));
+          
           if (newOrders.length > 0) {
+            console.log("🔊 Playing notification sound for new orders!");
             // Always play notification sound for real new orders
             playNotificationSound();
 
@@ -191,12 +210,15 @@ export default function AdminPage() {
                 duration: 4000,
               }
             );
+          } else {
+            console.log("😴 No new orders detected");
           }
         }
 
         setOrders(ordersData);
         setLastOrderIds(new Set(ordersData.map((order: Order) => order.id)));
         setLastUpdated(new Date());
+        console.log("✅ Orders updated, new lastOrderIds size:", ordersData.length);
       } else {
         console.error("Failed to fetch orders");
         setOrders([]);
@@ -210,9 +232,27 @@ export default function AdminPage() {
   useEffect(() => {
     if (isAuthenticated && !isCheckingAuth) {
       fetchOrders();
-      // Set up polling to refresh orders every 10 seconds (faster for real-time updates)
+      // Real-time: listen for new orders and refresh immediately
+      const channel = supabase
+        .channel("orders-realtime")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "orders" },
+          (payload) => {
+            console.log("🚨 REALTIME INSERT DETECTED!", payload);
+            console.log("🔔 Triggering fetchOrders(true) from Realtime...");
+            // Immediately fetch and notify
+            fetchOrders(true);
+          }
+        )
+        .subscribe();
+
+      // Polling fallback (keeps UI fresh if realtime disconnects)
       const interval = setInterval(() => fetchOrders(true), 10000);
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        supabase.removeChannel(channel);
+      };
     }
   }, [isAuthenticated, isCheckingAuth]);
 

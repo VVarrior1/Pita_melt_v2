@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { NextRequest, NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function PATCH(
   request: NextRequest,
@@ -10,15 +10,15 @@ export async function PATCH(
     const { status } = await request.json();
 
     const { data, error } = await supabaseAdmin
-      .from('orders')
+      .from("orders")
       .update({ status })
-      .eq('id', orderId)
+      .eq("id", orderId)
       .select();
 
     if (error) {
-      console.error('Error updating order status:', error);
+      console.error("Error updating order status:", error);
       return NextResponse.json(
-        { error: 'Failed to update order status' },
+        { error: "Failed to update order status" },
         { status: 500 }
       );
     }
@@ -26,9 +26,9 @@ export async function PATCH(
     console.log(`Order ${orderId} status updated to: ${status}`);
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('Error updating order status:', error);
+    console.error("Error updating order status:", error);
     return NextResponse.json(
-      { error: 'Failed to update order status' },
+      { error: "Failed to update order status" },
       { status: 500 }
     );
   }

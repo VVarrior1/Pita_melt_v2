@@ -14,15 +14,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]
@@ -41,15 +42,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]
@@ -67,15 +69,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]
@@ -93,15 +96,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]
@@ -119,15 +123,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]
@@ -145,15 +150,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]
@@ -171,15 +177,16 @@
       "customizations": [
         {
           "id": "sauce",
-          "name": "Sauce Selection (Choose up to 3)",
+          "name": "Sauce Selection (Choose up to 4)",
           "type": "checkbox",
           "required": true,
-          "maxSelections": 3,
+          "maxSelections": 4,
           "options": [
             { "id": "hotsauce", "name": "Hot Sauce", "priceModifier": 0 },
             { "id": "tahini", "name": "Tahini Sauce", "priceModifier": 0 },
             { "id": "garlic", "name": "Garlic Paste", "priceModifier": 0 },
-            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 }
+            { "id": "pitamelt", "name": "Pita Melt Sauce", "priceModifier": 0 },
+            { "id": "sweet-sauce", "name": "Sweet Sauce", "priceModifier": 0 }
           ]
         }
       ]

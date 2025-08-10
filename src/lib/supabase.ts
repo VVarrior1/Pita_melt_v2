@@ -1,14 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 // Client for public operations (admin dashboard)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Service client for server-side operations (webhooks, API routes)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 export interface Order {
   id: string;
@@ -18,8 +14,8 @@ export interface Order {
   customer_phone: string;
   pickup_time: string;
   total_amount: number;
-  status: 'confirmed' | 'preparing' | 'ready' | 'completed';
-  payment_status: 'succeeded' | 'failed' | 'pending';
+  status: "confirmed" | "preparing" | "ready" | "completed";
+  payment_status: "succeeded" | "failed" | "pending";
   items: OrderItem[];
   special_instructions?: string;
   created_at: string;
