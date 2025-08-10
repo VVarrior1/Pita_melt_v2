@@ -29,10 +29,6 @@ export default function AdminPage() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const unacceptedOrderIdsRef = useRef<Set<string>>(new Set());
-  const NOTIFICATION_DURATION_SEC = 1.8;
-  // Louder overall level (master) and strong per-note peak
-  const MASTER_GAIN = 1.0; // 0.0 - 1.0 is typical unclipped range
-  const NOTE_PEAK_GAIN = 2.0; // allow brief, punchy peaks
 
   // Check authentication status after component mounts (client-side only)
   useEffect(() => {
@@ -72,13 +68,16 @@ export default function AdminPage() {
     }
 
     console.log("🔔 Starting continuous notification...");
-    
+
     // Play immediately
     playNotificationSound();
 
     // Then play every 3 seconds
     notificationIntervalRef.current = setInterval(() => {
-      console.log("⏰ Checking unaccepted orders:", unacceptedOrderIdsRef.current.size);
+      console.log(
+        "⏰ Checking unaccepted orders:",
+        unacceptedOrderIdsRef.current.size
+      );
       if (unacceptedOrderIdsRef.current.size > 0) {
         // Ensure audio context is active
         const ctx = ensureAudioContext();
@@ -108,75 +107,50 @@ export default function AdminPage() {
     try {
       const audioContext = ensureAudioContext();
       if (!audioContext) return;
+      
+      // Always try to resume the context
       if (audioContext.state === "suspended") {
         audioContext.resume().catch(() => {});
       }
 
-      const t0 = audioContext.currentTime;
+      console.log("🎵 Playing notification sound, context state:", audioContext.state);
 
-      // Master envelope for overall level
-      const masterGain = audioContext.createGain();
-      masterGain.gain.setValueAtTime(0, t0);
-      masterGain.gain.linearRampToValueAtTime(MASTER_GAIN, t0 + 0.03);
-      masterGain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        t0 + NOTIFICATION_DURATION_SEC
-      );
-
-      // Gentle low-pass to soften the tone
-      const filter = audioContext.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(6000, t0);
-      filter.Q.setValueAtTime(0.8, t0);
-
-      // Simple echo for a pleasant tail
-      const delay = audioContext.createDelay();
-      delay.delayTime.value = 0.16;
-      const feedback = audioContext.createGain();
-      feedback.gain.value = 0.3;
-
-      // Wiring
-      filter.connect(delay);
-      delay.connect(feedback);
-      feedback.connect(delay);
-      filter.connect(masterGain);
-      delay.connect(masterGain);
-      masterGain.connect(audioContext.destination);
-
-      const scheduleNote = (freq: number, start: number, dur: number) => {
-        const osc1 = audioContext.createOscillator();
+      // Use a simple oscillator beep that's more reliable
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5
+      oscillator.type = "sine";
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.7, audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 1.5);
+      
+      // Play a second beep
+      setTimeout(() => {
         const osc2 = audioContext.createOscillator();
-        const noteGain = audioContext.createGain();
-
-        osc1.type = "sine";
+        const gain2 = audioContext.createGain();
+        
+        osc2.frequency.setValueAtTime(1108.73, audioContext.currentTime); // C#6
         osc2.type = "sine";
-        osc1.frequency.setValueAtTime(freq, t0 + start);
-        osc2.frequency.setValueAtTime(freq, t0 + start);
-        osc1.detune.setValueAtTime(-6, t0 + start);
-        osc2.detune.setValueAtTime(6, t0 + start);
-
-        // Per-note envelope
-        noteGain.gain.setValueAtTime(0, t0 + start);
-        noteGain.gain.linearRampToValueAtTime(
-          NOTE_PEAK_GAIN,
-          t0 + start + 0.02
-        );
-        noteGain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + dur);
-
-        osc1.connect(noteGain);
-        osc2.connect(noteGain);
-        noteGain.connect(filter);
-
-        osc1.start(t0 + start);
-        osc2.start(t0 + start);
-        osc1.stop(t0 + start + dur);
-        osc2.stop(t0 + start + dur);
-      };
-
-      // Soft triad arpeggio: A5 -> C#6 -> E6
-      scheduleNote(880, 0.0, 0.55);
-      scheduleNote(1108.73, 0.35, 0.55);
-      scheduleNote(1318.51, 0.7, 0.7);
+        
+        gain2.gain.setValueAtTime(0, audioContext.currentTime);
+        gain2.gain.linearRampToValueAtTime(0.7, audioContext.currentTime + 0.01);
+        gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+        
+        osc2.connect(gain2);
+        gain2.connect(audioContext.destination);
+        
+        osc2.start(audioContext.currentTime);
+        osc2.stop(audioContext.currentTime + 1.5);
+      }, 200);
+      
     } catch (error) {
       console.log("Audio notification not supported or failed:", error);
     }
@@ -488,7 +462,7 @@ export default function AdminPage() {
     // Start continuous notification
     startContinuousNotification();
     toast.success("🔔 New order received (simulation)");
-    setOrders((prev) => [fake, ...prev]);
+    setOrders((prev) => [...prev, fake]);
   };
 
   const getFilteredOrders = () => {

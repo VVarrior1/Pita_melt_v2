@@ -73,7 +73,7 @@ export default function AdminOrderCard({
       case "confirmed":
         return "preparing";
       case "preparing":
-        return "ready";
+        return "completed";
       case "ready":
         return "completed";
       default:
@@ -84,7 +84,7 @@ export default function AdminOrderCard({
   const getNextStatusLabel = (currentStatus: OrderStatus): string => {
     switch (currentStatus) {
       case "preparing":
-        return "Mark Ready";
+        return "Mark Completed";
       case "ready":
         return "Mark Completed";
       default:

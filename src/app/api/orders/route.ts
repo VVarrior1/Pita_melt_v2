@@ -6,7 +6,7 @@ export async function GET() {
     const { data: orders, error } = await supabase
       .from('orders')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true });
 
     if (error) {
       console.error('Error fetching orders:', error);
