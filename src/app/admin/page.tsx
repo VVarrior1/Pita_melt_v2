@@ -30,7 +30,6 @@ export default function AdminPage() {
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const unacceptedOrderIdsRef = useRef<Set<string>>(new Set());
   const playCountRef = useRef<number>(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Check authentication status after component mounts (client-side only)
   useEffect(() => {
@@ -44,27 +43,29 @@ export default function AdminPage() {
     };
 
     checkAuth();
-    
-    // Initialize audio element with a data URI beep sound
-    if (typeof window !== "undefined" && !audioRef.current) {
-      // Create a simple beep sound data URI
-      audioRef.current = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSl7y+/XizMLGGS46+ysWxoIUKzn4LNfJgl7tuz/0lktBixw1/Tcgi4CKHjH8d2RQAkUXrTp66hVFApGn+DyvmwhBSl7y+/XizMLGGS46+ysWxoIUKzn4LNfJgl7tuz/0lktBixw1/Tcgi4HM3++9+NwOR8/grjt+v3+/quDMgkLPqLk6bJlJwZFp+PusWIcBD+Y2/LGdykFLYLQ8+KSONALSqzm57BfLQAA");
-      audioRef.current.volume = 0.5;
-    }
+
+    // No audio element initialization needed - will use Web Audio API only
   }, []);
 
-  // Create audio context for notifications
+  // Create audio context for notifications with older browser support
   const ensureAudioContext = () => {
     if (!audioContextRef.current) {
       try {
-        audioContextRef.current = new (window.AudioContext ||
-          (
-            window as typeof window & {
-              webkitAudioContext: typeof AudioContext;
-            }
-          ).webkitAudioContext)();
+        // Support for older browsers including older Chrome
+        const AudioContextClass = window.AudioContext || 
+          (window as any).webkitAudioContext || 
+          (window as any).mozAudioContext ||
+          (window as any).oAudioContext ||
+          (window as any).msAudioContext;
+          
+        if (AudioContextClass) {
+          audioContextRef.current = new AudioContextClass();
+          console.log("Audio context created:", audioContextRef.current.constructor.name);
+        } else {
+          console.log("No AudioContext support detected");
+        }
       } catch (error) {
-        console.log("AudioContext not available:", error);
+        console.log("AudioContext creation failed:", error);
       }
     }
     return audioContextRef.current;
@@ -76,13 +77,13 @@ export default function AdminPage() {
     playCountRef.current = 0;
 
     console.log("🔔 Starting continuous notification...");
-    
+
     // Create a recursive function that uses setTimeout instead of setInterval
     const playLoop = () => {
       // Always check the current ref value
       const hasUnaccepted = unacceptedOrderIdsRef.current.size > 0;
       playCountRef.current++;
-      
+
       console.log(
         "⏰ Play loop iteration #" + playCountRef.current,
         "- unaccepted orders:",
@@ -92,10 +93,10 @@ export default function AdminPage() {
         "Array from set:",
         Array.from(unacceptedOrderIdsRef.current)
       );
-      
+
       if (hasUnaccepted) {
         playNotificationSound();
-        
+
         // Schedule next iteration - ensure we're creating a new timeout
         notificationIntervalRef.current = setTimeout(() => {
           playLoop();
@@ -105,12 +106,12 @@ export default function AdminPage() {
         playCountRef.current = 0;
       }
     };
-    
+
     // Play immediately
     playCountRef.current = 1;
     console.log("🎵 Initial play #1");
     playNotificationSound();
-    
+
     // Start the loop after first delay
     notificationIntervalRef.current = setTimeout(() => {
       playLoop();
@@ -125,57 +126,68 @@ export default function AdminPage() {
     }
   };
 
-    const playNotificationSound = () => {
+  const playNotificationSound = () => {
     try {
-      // Method 1: Try HTML5 Audio first (more reliable)
-      if (audioRef.current) {
-        console.log("🎵 Playing HTML5 audio notification");
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch((e) => {
-          console.log("HTML5 audio play failed:", e);
-          // Fallback to Web Audio API
-          playWebAudioNotification();
-        });
-      } else {
-        // Fallback to Web Audio API
-        playWebAudioNotification();
+      const audioContext = ensureAudioContext();
+      if (!audioContext) {
+        console.log("No audio context available");
+        return;
       }
+      
+      // Always try to resume the context for older Chrome compatibility
+      if (audioContext.state === "suspended") {
+        audioContext.resume().catch(() => {});
+      }
+
+      console.log("🎵 Playing notification, context state:", audioContext.state);
+
+      // Create a pleasant two-tone doorbell chime
+      const now = audioContext.currentTime;
+      
+      // First tone (higher)
+      const osc1 = audioContext.createOscillator();
+      const gain1 = audioContext.createGain();
+      
+      osc1.frequency.value = 800; // E5
+      osc1.type = "sine";
+      
+      // Envelope for first tone
+      gain1.gain.setValueAtTime(0, now);
+      gain1.gain.linearRampToValueAtTime(0.3, now + 0.05);
+      gain1.gain.linearRampToValueAtTime(0.3, now + 0.2);
+      gain1.gain.linearRampToValueAtTime(0, now + 0.4);
+      
+      osc1.connect(gain1);
+      gain1.connect(audioContext.destination);
+      
+      osc1.start(now);
+      osc1.stop(now + 0.4);
+      
+      // Second tone (lower) - starts slightly after first
+      const osc2 = audioContext.createOscillator();
+      const gain2 = audioContext.createGain();
+      
+      osc2.frequency.value = 600; // D5
+      osc2.type = "sine";
+      
+      // Envelope for second tone
+      gain2.gain.setValueAtTime(0, now + 0.3);
+      gain2.gain.linearRampToValueAtTime(0.25, now + 0.35);
+      gain2.gain.linearRampToValueAtTime(0.25, now + 0.5);
+      gain2.gain.linearRampToValueAtTime(0, now + 0.7);
+      
+      osc2.connect(gain2);
+      gain2.connect(audioContext.destination);
+      
+      osc2.start(now + 0.3);
+      osc2.stop(now + 0.7);
+      
     } catch (error) {
       console.log("Audio notification failed:", error);
     }
   };
 
-  const playWebAudioNotification = () => {
-    try {
-      const audioContext = ensureAudioContext();
-      if (!audioContext) return;
-      
-      // Always try to resume the context
-      if (audioContext.state === "suspended") {
-        audioContext.resume().catch(() => {});
-      }
 
-      console.log("🎵 Playing Web Audio API notification, context state:", audioContext.state);
-
-      // Simple beep
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
-      oscillator.type = "sine";
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
-    } catch (error) {
-      console.log("Web Audio API notification failed:", error);
-    }
-  };
 
   // Create a user-gesture to unlock audio on first interaction
   useEffect(() => {
