@@ -71,6 +71,10 @@ export default function AdminOrderCard({
   const getNextStatus = (currentStatus: OrderStatus): OrderStatus | null => {
     switch (currentStatus) {
       case "confirmed":
+        return "preparing";
+      case "preparing":
+        return "ready";
+      case "ready":
         return "completed";
       default:
         return null;
@@ -78,9 +82,10 @@ export default function AdminOrderCard({
   };
 
   const getNextStatusLabel = (currentStatus: OrderStatus): string => {
-    const next = getNextStatus(currentStatus);
-    switch (next) {
-      case "completed":
+    switch (currentStatus) {
+      case "preparing":
+        return "Mark Ready";
+      case "ready":
         return "Mark Completed";
       default:
         return "Update Status";
@@ -208,7 +213,13 @@ export default function AdminOrderCard({
                 onClick={handleStatusUpdate}
                 isLoading={isUpdating}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
+                className={
+                  order.status === "preparing" 
+                    ? "bg-yellow-600 hover:bg-yellow-700"
+                    : order.status === "ready"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }
               >
                 {getNextStatusLabel(order.status)}
               </Button>

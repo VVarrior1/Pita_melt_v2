@@ -20,10 +20,15 @@ export default function AdminPage() {
   const [lastOrderIds, setLastOrderIds] = useState<Set<string>>(new Set());
   const [lastCheckedTime, setLastCheckedTime] = useState<Date>(new Date());
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [notifiedOrderIds, setNotifiedOrderIds] = useState<Set<string>>(new Set());
-  const [unacceptedOrderIds, setUnacceptedOrderIds] = useState<Set<string>>(new Set());
+  const [notifiedOrderIds, setNotifiedOrderIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [unacceptedOrderIds, setUnacceptedOrderIds] = useState<Set<string>>(
+    new Set()
+  );
   const audioContextRef = useRef<AudioContext | null>(null);
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const unacceptedOrderIdsRef = useRef<Set<string>>(new Set());
   const NOTIFICATION_DURATION_SEC = 1.8;
   // Louder overall level (master) and strong per-note peak
   const MASTER_GAIN = 1.0; // 0.0 - 1.0 is typical unclipped range
@@ -66,15 +71,27 @@ export default function AdminPage() {
       clearInterval(notificationIntervalRef.current);
     }
 
+    console.log("🔔 Starting continuous notification...");
+    
     // Play immediately
     playNotificationSound();
 
     // Then play every 3 seconds
     notificationIntervalRef.current = setInterval(() => {
-      if (unacceptedOrderIds.size > 0) {
-        playNotificationSound();
+      console.log("⏰ Checking unaccepted orders:", unacceptedOrderIdsRef.current.size);
+      if (unacceptedOrderIdsRef.current.size > 0) {
+        // Ensure audio context is active
+        const ctx = ensureAudioContext();
+        if (ctx && ctx.state === "suspended") {
+          ctx.resume().then(() => {
+            playNotificationSound();
+          });
+        } else {
+          playNotificationSound();
+        }
       } else {
         // Stop ringing if all orders are accepted
+        console.log("✅ All orders accepted, stopping notifications");
         stopContinuousNotification();
       }
     }, 3000);
@@ -237,7 +254,9 @@ export default function AdminPage() {
             const notYetNotified = !notifiedOrderIds.has(order.id);
 
             console.log(
-              `Order ${order.id}: isNew=${isNew}, isRecent=${isRecent}, notYetNotified=${notYetNotified}, orderTime=${orderTime.toISOString()}`
+              `Order ${
+                order.id
+              }: isNew=${isNew}, isRecent=${isRecent}, notYetNotified=${notYetNotified}, orderTime=${orderTime.toISOString()}`
             );
 
             return isNew && isRecent && notYetNotified;
@@ -251,7 +270,7 @@ export default function AdminPage() {
 
           if (newRecentOrders.length > 0) {
             console.log("🔊 Starting continuous notification for new orders!");
-            
+
             // Mark these orders as notified
             const newNotifiedIds = new Set(notifiedOrderIds);
             const newUnacceptedIds = new Set(unacceptedOrderIds);
@@ -264,6 +283,7 @@ export default function AdminPage() {
             });
             setNotifiedOrderIds(newNotifiedIds);
             setUnacceptedOrderIds(newUnacceptedIds);
+            unacceptedOrderIdsRef.current = newUnacceptedIds;
 
             // Show toast notification
             toast.success(
@@ -380,6 +400,7 @@ export default function AdminPage() {
     const newUnacceptedIds = new Set(unacceptedOrderIds);
     newUnacceptedIds.delete(orderId);
     setUnacceptedOrderIds(newUnacceptedIds);
+    unacceptedOrderIdsRef.current = newUnacceptedIds;
 
     // Stop ringing if no more unaccepted orders
     if (newUnacceptedIds.size === 0) {
@@ -457,9 +478,13 @@ export default function AdminPage() {
     };
 
     // Add to notified and unaccepted orders
-    setNotifiedOrderIds(prev => new Set([...prev, fake.id]));
-    setUnacceptedOrderIds(prev => new Set([...prev, fake.id]));
-    
+    setNotifiedOrderIds((prev) => new Set([...prev, fake.id]));
+    setUnacceptedOrderIds((prev) => {
+      const newSet = new Set([...prev, fake.id]);
+      unacceptedOrderIdsRef.current = newSet;
+      return newSet;
+    });
+
     // Start continuous notification
     startContinuousNotification();
     toast.success("🔔 New order received (simulation)");
