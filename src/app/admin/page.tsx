@@ -29,6 +29,8 @@ export default function AdminPage() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const unacceptedOrderIdsRef = useRef<Set<string>>(new Set());
+  const playCountRef = useRef<number>(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Check authentication status after component mounts (client-side only)
   useEffect(() => {
@@ -42,6 +44,13 @@ export default function AdminPage() {
     };
 
     checkAuth();
+    
+    // Initialize audio element with a data URI beep sound
+    if (typeof window !== "undefined" && !audioRef.current) {
+      // Create a simple beep sound data URI
+      audioRef.current = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSl7y+/XizMLGGS46+ysWxoIUKzn4LNfJgl7tuz/0lktBixw1/Tcgi4CKHjH8d2RQAkUXrTp66hVFApGn+DyvmwhBSl7y+/XizMLGGS46+ysWxoIUKzn4LNfJgl7tuz/0lktBixw1/Tcgi4HM3++9+NwOR8/grjt+v3+/quDMgkLPqLk6bJlJwZFp+PusWIcBD+Y2/LGdykFLYLQ8+KSONALSqzm57BfLQAA");
+      audioRef.current.volume = 0.5;
+    }
   }, []);
 
   // Create audio context for notifications
@@ -63,47 +72,80 @@ export default function AdminPage() {
 
   const startContinuousNotification = () => {
     // Clear any existing interval
-    if (notificationIntervalRef.current) {
-      clearInterval(notificationIntervalRef.current);
-    }
+    stopContinuousNotification();
+    playCountRef.current = 0;
 
     console.log("🔔 Starting continuous notification...");
-
-    // Play immediately
-    playNotificationSound();
-
-    // Then play every 3 seconds
-    notificationIntervalRef.current = setInterval(() => {
+    
+    // Create a recursive function that uses setTimeout instead of setInterval
+    const playLoop = () => {
+      // Always check the current ref value
+      const hasUnaccepted = unacceptedOrderIdsRef.current.size > 0;
+      playCountRef.current++;
+      
       console.log(
-        "⏰ Checking unaccepted orders:",
-        unacceptedOrderIdsRef.current.size
+        "⏰ Play loop iteration #" + playCountRef.current,
+        "- unaccepted orders:",
+        unacceptedOrderIdsRef.current.size,
+        "hasUnaccepted:",
+        hasUnaccepted,
+        "Array from set:",
+        Array.from(unacceptedOrderIdsRef.current)
       );
-      if (unacceptedOrderIdsRef.current.size > 0) {
-        // Ensure audio context is active
-        const ctx = ensureAudioContext();
-        if (ctx && ctx.state === "suspended") {
-          ctx.resume().then(() => {
-            playNotificationSound();
-          });
-        } else {
-          playNotificationSound();
-        }
+      
+      if (hasUnaccepted) {
+        playNotificationSound();
+        
+        // Schedule next iteration - ensure we're creating a new timeout
+        notificationIntervalRef.current = setTimeout(() => {
+          playLoop();
+        }, 3000);
       } else {
-        // Stop ringing if all orders are accepted
         console.log("✅ All orders accepted, stopping notifications");
-        stopContinuousNotification();
+        playCountRef.current = 0;
       }
+    };
+    
+    // Play immediately
+    playCountRef.current = 1;
+    console.log("🎵 Initial play #1");
+    playNotificationSound();
+    
+    // Start the loop after first delay
+    notificationIntervalRef.current = setTimeout(() => {
+      playLoop();
     }, 3000);
   };
 
   const stopContinuousNotification = () => {
     if (notificationIntervalRef.current) {
-      clearInterval(notificationIntervalRef.current);
+      clearTimeout(notificationIntervalRef.current);
       notificationIntervalRef.current = null;
+      console.log("🛑 Stopped continuous notification");
     }
   };
 
-  const playNotificationSound = () => {
+    const playNotificationSound = () => {
+    try {
+      // Method 1: Try HTML5 Audio first (more reliable)
+      if (audioRef.current) {
+        console.log("🎵 Playing HTML5 audio notification");
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch((e) => {
+          console.log("HTML5 audio play failed:", e);
+          // Fallback to Web Audio API
+          playWebAudioNotification();
+        });
+      } else {
+        // Fallback to Web Audio API
+        playWebAudioNotification();
+      }
+    } catch (error) {
+      console.log("Audio notification failed:", error);
+    }
+  };
+
+  const playWebAudioNotification = () => {
     try {
       const audioContext = ensureAudioContext();
       if (!audioContext) return;
@@ -113,46 +155,25 @@ export default function AdminPage() {
         audioContext.resume().catch(() => {});
       }
 
-      console.log("🎵 Playing notification sound, context state:", audioContext.state);
+      console.log("🎵 Playing Web Audio API notification, context state:", audioContext.state);
 
-      // Use a simple oscillator beep that's more reliable
+      // Simple beep
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
-      oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5
+
+      oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
       oscillator.type = "sine";
-      
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.7, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
-      
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 1.5);
-      
-      // Play a second beep
-      setTimeout(() => {
-        const osc2 = audioContext.createOscillator();
-        const gain2 = audioContext.createGain();
-        
-        osc2.frequency.setValueAtTime(1108.73, audioContext.currentTime); // C#6
-        osc2.type = "sine";
-        
-        gain2.gain.setValueAtTime(0, audioContext.currentTime);
-        gain2.gain.linearRampToValueAtTime(0.7, audioContext.currentTime + 0.01);
-        gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
-        
-        osc2.connect(gain2);
-        gain2.connect(audioContext.destination);
-        
-        osc2.start(audioContext.currentTime);
-        osc2.stop(audioContext.currentTime + 1.5);
-      }, 200);
-      
+      oscillator.stop(audioContext.currentTime + 0.5);
     } catch (error) {
-      console.log("Audio notification not supported or failed:", error);
+      console.log("Web Audio API notification failed:", error);
     }
   };
 
