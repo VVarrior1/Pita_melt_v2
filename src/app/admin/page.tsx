@@ -169,16 +169,22 @@ export default function AdminPage() {
 
   const fetchOrders = async (showNotification = false) => {
     try {
-      console.log("🔍 fetchOrders called with showNotification:", showNotification);
+      console.log(
+        "🔍 fetchOrders called with showNotification:",
+        showNotification
+      );
       console.log("📋 Current lastOrderIds size:", lastOrderIds.size);
       console.log("📋 Current lastOrderIds:", Array.from(lastOrderIds));
-      
+
       const response = await fetch("/api/orders");
       if (response.ok) {
         const ordersData = await response.json();
         console.log("📦 Fetched orders count:", ordersData.length);
-        console.log("📦 Fetched order IDs:", ordersData.map((o: Order) => o.id));
-        
+        console.log(
+          "📦 Fetched order IDs:",
+          ordersData.map((o: Order) => o.id)
+        );
+
         const currentOrderIds = new Set(
           ordersData.map((order: Order) => order.id)
         );
@@ -187,15 +193,18 @@ export default function AdminPage() {
         if (showNotification) {
           console.log("🔔 Checking for new orders...");
           console.log("📋 lastOrderIds.size:", lastOrderIds.size);
-          
+
           // Always check for new orders, even if lastOrderIds is empty (first load)
           const newOrders = ordersData.filter(
             (order: Order) => !lastOrderIds.has(order.id)
           );
-          
+
           console.log("🆕 New orders found:", newOrders.length);
-          console.log("🆕 New order IDs:", newOrders.map((o: Order) => o.id));
-          
+          console.log(
+            "🆕 New order IDs:",
+            newOrders.map((o: Order) => o.id)
+          );
+
           if (newOrders.length > 0) {
             console.log("🔊 Playing notification sound for new orders!");
             // Always play notification sound for real new orders
@@ -218,7 +227,10 @@ export default function AdminPage() {
         setOrders(ordersData);
         setLastOrderIds(new Set(ordersData.map((order: Order) => order.id)));
         setLastUpdated(new Date());
-        console.log("✅ Orders updated, new lastOrderIds size:", ordersData.length);
+        console.log(
+          "✅ Orders updated, new lastOrderIds size:",
+          ordersData.length
+        );
       } else {
         console.error("Failed to fetch orders");
         setOrders([]);
